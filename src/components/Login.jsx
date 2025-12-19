@@ -48,14 +48,37 @@ function Login() {
 			</div>
 
 			<div className="relative w-full max-w-md">
+				{/* ⭐ ADDED: DEMO CREDENTIALS BOX ⭐ */}
+				<div className="mb-6 backdrop-blur-xl bg-white/10 border border-white/10 rounded-2xl p-5">
+					<h2 className="text-lg font-semibold text-indigo-200">
+						Demo Login (For Showcase)
+					</h2>
+					<p className="mt-1 text-sm text-white/70">
+						This is a skill-showcase project. You can copy & paste
+						these credentials to explore the dashboard without
+						creating an account.
+					</p>
+
+					<div className="mt-4 space-y-1 text-sm">
+						<p>
+							<span className="font-medium text-indigo-300">
+								Email:
+							</span>{' '}
+							hello@gmail.com
+						</p>
+						<p>
+							<span className="font-medium text-indigo-300">
+								Password:
+							</span>{' '}
+							Hello@1750
+						</p>
+					</div>
+				</div>
+				{/* ⭐ END DEMO CREDENTIALS BOX ⭐ */}
+
 				{/* Card */}
 				<div className="backdrop-blur-xl bg-white/10 border border-white/10 shadow-2xl rounded-2xl p-8">
 					<div className="flex flex-col items-center gap-3">
-						{/* <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/10 grid place-items-center">
-							<span className="inline-block w-12">
-								<Logo width="100%" />
-							</span>
-						</div> */}
 						<h1 className="text-2xl font-semibold tracking-tight">
 							Welcome back
 						</h1>
@@ -138,11 +161,6 @@ function Login() {
 									type="button"
 									onClick={() => setShowPassword((s) => !s)}
 									className="absolute inset-y-0 right-0 my-1 mr-1 rounded-lg px-3 text-xs text-white/70 hover:text-white/90 bg-white/5 hover:bg-white/10"
-									aria-label={
-										showPassword
-											? 'Hide password'
-											: 'Show password'
-									}
 								>
 									{showPassword ? 'Hide' : 'Show'}
 								</button>
@@ -179,37 +197,6 @@ function Login() {
 							<span className="absolute inset-0 -z-10 rounded-xl bg-indigo-400/40 blur opacity-0 transition group-hover:opacity-100" />
 							{isSubmitting ? 'Signing in…' : 'Sign in'}
 						</button>
-
-						{/* Divider */}
-						<div className="relative my-1">
-							<div
-								className="absolute inset-0 flex items-center"
-								aria-hidden="true"
-							>
-								<div className="w-full border-t border-white/10" />
-							</div>
-							<div className="relative flex justify-center">
-								<span className="bg-transparent px-2 text-xs text-white/50">
-									or
-								</span>
-							</div>
-						</div>
-
-						{/* OAuth placeholders (wire up later) */}
-						<div className="grid grid-cols-2 gap-3">
-							<button
-								type="button"
-								className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
-							>
-								Sign in with Google
-							</button>
-							<button
-								type="button"
-								className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
-							>
-								Sign in with GitHub
-							</button>
-						</div>
 					</form>
 				</div>
 
