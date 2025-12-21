@@ -20,6 +20,27 @@ function Login() {
 	const [error, setError] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
 
+	const DEMO_CREDENTIALS = {
+		email: 'hello@gmail.com',
+		password: 'Hello@1750',
+	};
+
+	const handleDemoLogin = async () => {
+		setError('');
+		clearErrors('root');
+
+		try {
+			const session = await authService.login(DEMO_CREDENTIALS);
+			if (session) {
+				const userData = await authService.getCurrentUser();
+				if (userData) dispatch(authLogin(userData));
+				navigate('/');
+			}
+		} catch (err) {
+			setError('Demo login failed. Please try again later.');
+		}
+	};
+
 	const onSubmit = async (data) => {
 		setError('');
 		clearErrors('root');
@@ -59,20 +80,17 @@ function Login() {
 						creating an account.
 					</p>
 
-					<div className="mt-4 space-y-1 text-sm">
-						<p>
-							<span className="font-medium text-indigo-300">
-								Email:
-							</span>{' '}
-							hello@gmail.com
-						</p>
-						<p>
-							<span className="font-medium text-indigo-300">
-								Password:
-							</span>{' '}
-							Hello@1750
-						</p>
-					</div>
+					{/* Demo Login Button */}
+					<button
+						type="button"
+						onClick={handleDemoLogin}
+						className="mt-6 w-full rounded-xl border border-indigo-400/30 bg-indigo-400/10 px-4 py-3 text-sm font-medium text-indigo-200 transition hover:bg-indigo-400/20"
+					>
+						Continue as Demo User
+					</button>
+					<p className="mt-2 text-center text-xs text-white/60">
+						No signup required. Explore all features instantly.
+					</p>
 				</div>
 				{/* ⭐ END DEMO CREDENTIALS BOX ⭐ */}
 
