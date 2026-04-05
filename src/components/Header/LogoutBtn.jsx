@@ -22,8 +22,7 @@ function LogoutBtn() {
 		<button
 			onClick={logoutHandler}
 			className="
-		inline-flex items-center gap-2
-		rounded-full border border-indigo-400/30
+		inline-flex items-center gap-2 border border-indigo-400/30
 		bg-transparent px-6 py-2 text-sm font-medium
 		text-indigo-200
 		transition-all duration-200

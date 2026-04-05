@@ -1,9 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import appwriteService from '../appwrite/config';
-import { Button, Container, CommentForm, CommentList } from '../components';
+import { Button, CommentForm, CommentList } from '../components';
 import parse from 'html-react-parser';
 import { useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+	ChevronRight,
+	Clock,
+	Calendar,
+	Edit,
+	Trash2,
+	ArrowLeft,
+	List,
+	Share2,
+	Check,
+	AlertCircle,
+} from 'lucide-react';
 
 export default function Post() {
 	const [post, setPost] = useState(null);
@@ -70,167 +83,286 @@ export default function Post() {
 	};
 
 	return (
-		<div className="min-h-screen w-full bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-900 text-white">
-			{/* BG glow */}
-			<div className="pointer-events-none absolute inset-0 overflow-hidden">
-				<div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-				<div className="absolute -bottom-32 -right-20 h-80 w-80 rounded-full bg-fuchsia-500/10 blur-3xl" />
-			</div>
-
-			<Container>
+		<div className=" min-h-screen w-full">
+			<div className="md:max-w-[60%] mx-auto">
 				{/* Breadcrumb */}
-				<div className="relative z-10 pt-6 text-sm text-white/60">
-					<Link to="/" className="hover:text-white">
+				<motion.div
+					initial={{ opacity: 0, y: -10 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.4 }}
+					className="pt-6 flex items-center gap-2 text-sm text-[#6B7280]"
+				>
+					<Link
+						to="/"
+						className="hover:text-[#2563EB] transition-colors"
+					>
 						Home
 					</Link>
-					<span className="mx-2">/</span>
-					<span className="text-white/80">Post</span>
-				</div>
+					<ChevronRight className="w-4 h-4" />
+					<span className="text-[#111827] font-medium">Post</span>
+				</motion.div>
 
-				{/* Errors */}
-				{error && (
-					<div className="relative z-10 mt-4 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-red-200">
-						{error}
-					</div>
-				)}
+				{/* Error Message */}
+				<AnimatePresence>
+					{error && (
+						<motion.div
+							initial={{ opacity: 0, height: 0 }}
+							animate={{ opacity: 1, height: 'auto' }}
+							exit={{ opacity: 0, height: 0 }}
+							className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 flex items-start gap-3"
+						>
+							<AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+							<p className="text-sm text-red-800">{error}</p>
+						</motion.div>
+					)}
+				</AnimatePresence>
 
-				{/* Loading */}
+				{/* Loading Skeleton */}
 				{loading ? (
-					<div className="relative z-10 mt-6 grid gap-6 lg:grid-cols-3">
-						<div className="lg:col-span-2 rounded-2xl border border-white/10 bg-white/10 p-4 animate-pulse">
-							<div className="h-64 w-full rounded-xl bg-white/10" />
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						className="mt-6"
+					>
+						<div className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4">
+							<div className="h-64 w-full rounded-lg bg-[#E5E7EB] animate-pulse" />
+							<div className="mt-4 h-6 w-3/4 rounded bg-[#E5E7EB] animate-pulse" />
+							<div className="mt-2 h-4 w-1/2 rounded bg-[#E5E7EB] animate-pulse" />
 						</div>
-						<aside className="rounded-2xl border border-white/10 bg-white/10 p-4 animate-pulse" />
-					</div>
+						<aside className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4 h-64 animate-pulse" />
+					</motion.div>
 				) : post ? (
-					<div className="relative z-10 mt-6 grid gap-6 lg:grid-cols-3">
-						{/* Main post */}
-						<article className="lg:col-span-2 overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl">
-							{/* Image */}
+					<div className="mt-6 gap-6">
+						{/* Main Post Article */}
+						<motion.article
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5 }}
+							className=" overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-sm"
+						>
+							{/* Featured Image */}
+
 							<div className="relative">
-								<img
-									src={appwriteService.getFilePreview(
-										post.featuredImage
-									)}
-									alt={post.title}
-									className="h-72 w-full object-cover sm:h-96"
-								/>
+								{/* Author Actions */}
 								{isAuthor && (
-									<div className="absolute right-4 top-4 flex items-center gap-2">
+									<motion.div
+										initial={{ opacity: 0, scale: 0.9 }}
+										animate={{ opacity: 1, scale: 1 }}
+										className="absolute right-4 top-4 flex items-center gap-2"
+									>
 										<Link to={`/edit-post/${post.$id}`}>
-											<Button
-												bgColor="bg-green-500"
-												className="!py-2 !px-3 !text-sm"
+											<motion.button
+												whileHover={{ scale: 1.05 }}
+												whileTap={{ scale: 0.95 }}
+												className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-[#111827] shadow-lg hover:shadow-xl transition-shadow"
 											>
+												<Edit className="w-4 h-4" />
 												Edit
-											</Button>
+											</motion.button>
 										</Link>
-										<Button
-											bgColor="bg-red-500"
-											className="!py-2 !px-3 !text-sm"
+										<motion.button
+											whileHover={{ scale: 1.05 }}
+											whileTap={{ scale: 0.95 }}
 											onClick={() => setShowConfirm(true)}
+											className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-red-600 hover:shadow-xl transition-all"
 										>
+											<Trash2 className="w-4 h-4" />
 											Delete
-										</Button>
-									</div>
+										</motion.button>
+									</motion.div>
 								)}
 							</div>
 
-							{/* Header */}
-							<div className="p-6">
-								<h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
+							{/* Post Content */}
+							<div className="p-6 md:p-8">
+								{/* Title */}
+								<motion.h1
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.2 }}
+									className="text-2xl md:text-4xl font-bold tracking-tight text-[#111827] mr-[15%]"
+								>
 									{post.title}
-								</h1>
+								</motion.h1>
 
-								{/* Meta */}
-								<div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-white/70">
-									<span>
-										{new Date(
-											post.$createdAt
-										).toLocaleDateString()}
-									</span>
-									<span>• {readingTime} min read</span>
-								</div>
-
-								{/* Content */}
-								<div className="prose prose-invert prose-indigo max-w-none mt-6">
-									{parse(post.content)}
-								</div>
-
-								{/* Comments Section */}
-								{/* <div className="mt-10 border-t border-white/10 pt-6">
-									<h2 className="text-xl font-semibold mb-4">
-										Comments
-									</h2> */}
-
-
-									{/* List of comments */}
-									{/* <div className="mt-6">
-										<CommentList postId={post.$id} />
+								{/* Meta Information */}
+								<motion.div
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.3 }}
+									className="mt-4 flex flex-wrap items-center gap-4 text-sm text-[#6B7280]"
+								>
+									<div className="flex items-center gap-1.5">
+										<Calendar className="w-4 h-4" />
+										<span>
+											{new Date(
+												post.$createdAt,
+											).toLocaleDateString()}
+										</span>
 									</div>
-								</div> */}
+									<div className="flex items-center gap-1.5">
+										<Clock className="w-4 h-4" />
+										<span>{readingTime} min read</span>
+									</div>
+								</motion.div>
+
+								<div class="w-full aspect-video bg-white flex items-center justify-center mt-6 mb-6">
+									<img
+										src={appwriteService.getFilePreview(
+											post.featuredImage,
+										)}
+										alt={post.title}
+										className="max-w-full max-h-fit object-contain"
+									/>
+								</div>
+
+								{/* Post Content */}
+								<motion.div
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.4 }}
+									className="prose prose-slate max-w-none mt-6 text-[#111827] text-2xl text-justify"
+								>
+									{parse(post.content)}
+								</motion.div>
+
+								{/* Share Button */}
+								<motion.div
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.5 }}
+									className="mt-8 pt-6 border-t border-[#E5E7EB]"
+								>
+									<motion.button
+										whileHover={{ scale: 1.02 }}
+										whileTap={{ scale: 0.98 }}
+										onClick={copyLink}
+										className="flex items-center gap-2 rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-2 text-sm font-medium text-[#111827] hover:bg-white hover:border-[#2563EB] hover:text-[#2563EB] transition-all"
+									>
+										{copied ? (
+											<>
+												<Check className="w-4 h-4 text-green-600" />
+												<span className="text-green-600">
+													Link copied!
+												</span>
+											</>
+										) : (
+											<>
+												<Share2 className="w-4 h-4" />
+												Share this post
+											</>
+										)}
+									</motion.button>
+								</motion.div>
 							</div>
-						</article>
+						</motion.article>
 
 						{/* Sidebar */}
-						<aside className="space-y-6">
-							<div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-6">
-								<h3 className="text-sm font-medium text-white/90">
-									Post details
+						{/* <motion.aside
+							initial={{ opacity: 0, x: 20 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ duration: 0.5, delay: 0.2 }}
+							className="space-y-6"
+						>
+							//Post Details Card
+							<div className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-6">
+								<h3 className="text-sm font-semibold text-[#111827] uppercase tracking-wide">
+									Post Details
 								</h3>
-								<dl className="mt-4 space-y-3 text-sm text-white/70">
-									<dt>Status</dt>
-									<dd className="capitalize">
-										{post.status}
-									</dd>
+								<dl className="mt-4 space-y-3 text-sm">
+									<div>
+										<dt className="text-[#6B7280]">
+											Status
+										</dt>
+										<dd className="mt-1 capitalize font-medium text-[#111827]">
+											{post.status}
+										</dd>
+									</div>
 								</dl>
 
-								<div className="mt-6 flex items-center gap-3">
-									<Link
-										to="/"
-										className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
-									>
-										Back
+								// Navigation Buttons
+								<div className="mt-6 space-y-2">
+									<Link to="/" className="block">
+										<motion.button
+											whileHover={{ scale: 1.02 }}
+											whileTap={{ scale: 0.98 }}
+											className="w-full flex items-center justify-center gap-2 rounded-lg border border-[#E5E7EB] bg-white px-4 py-2.5 text-sm font-medium text-[#111827] hover:bg-[#F9FAFB] transition-colors"
+										>
+											<ArrowLeft className="w-4 h-4" />
+											Back to Home
+										</motion.button>
 									</Link>
-									<Link
-										to="/all-posts"
-										className="rounded-xl bg-indigo-500 px-4 py-2 text-sm"
-									>
-										All posts
+									<Link to="/all-posts" className="block">
+										<motion.button
+											whileHover={{ scale: 1.02 }}
+											whileTap={{ scale: 0.98 }}
+											className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#1d4ed8] transition-colors"
+										>
+											<List className="w-4 h-4" />
+											All Posts
+										</motion.button>
 									</Link>
 								</div>
 							</div>
-						</aside>
+						</motion.aside> */}
 					</div>
 				) : null}
-			</Container>
+			</div>
 
-			{/* Delete modal */}
-			{showConfirm && (
-				<div className="fixed inset-0 z-[60] grid place-items-center bg-black/60 p-4">
-					<div className="w-full max-w-md rounded-2xl border border-white/10 bg-slate-900/90 p-6">
-						<h4 className="text-lg font-semibold">Delete post?</h4>
-						<p className="mt-1 text-sm text-white/70">
-							This action cannot be undone.
-						</p>
-						<div className="mt-6 flex items-center justify-end gap-3">
-							<button
-								onClick={() => setShowConfirm(false)}
-								className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
-							>
-								Cancel
-							</button>
-							<Button
-								bgColor="bg-red-500"
-								className="!py-2 !px-4 !text-sm"
-								onClick={deletePost}
-							>
-								Delete
-							</Button>
-						</div>
-					</div>
-				</div>
-			)}
+			{/* Delete Confirmation Modal */}
+			<AnimatePresence>
+				{showConfirm && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						className="fixed inset-0 z-[60] grid place-items-center bg-black/50 p-4"
+						onClick={() => setShowConfirm(false)}
+					>
+						<motion.div
+							initial={{ scale: 0.9, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							exit={{ scale: 0.9, opacity: 0 }}
+							onClick={(e) => e.stopPropagation()}
+							className="w-full max-w-md rounded-xl border border-[#E5E7EB] bg-white shadow-2xl p-6"
+						>
+							<div className="flex items-start gap-4">
+								<div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+									<Trash2 className="w-5 h-5 text-red-600" />
+								</div>
+								<div className="flex-1">
+									<h4 className="text-lg font-semibold text-[#111827]">
+										Delete this post?
+									</h4>
+									<p className="mt-1 text-sm text-[#6B7280]">
+										This action cannot be undone. The post
+										will be permanently removed.
+									</p>
+								</div>
+							</div>
+
+							<div className="mt-6 flex items-center justify-end gap-3">
+								<motion.button
+									whileHover={{ scale: 1.02 }}
+									whileTap={{ scale: 0.98 }}
+									onClick={() => setShowConfirm(false)}
+									className="rounded-lg border border-[#E5E7EB] bg-white px-4 py-2 text-sm font-medium text-[#111827] hover:bg-[#F9FAFB] transition-colors"
+								>
+									Cancel
+								</motion.button>
+								<motion.button
+									whileHover={{ scale: 1.02 }}
+									whileTap={{ scale: 0.98 }}
+									onClick={deletePost}
+									className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 transition-colors"
+								>
+									Delete Post
+								</motion.button>
+							</div>
+						</motion.div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 }

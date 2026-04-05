@@ -7,9 +7,25 @@ import React, {
 } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, RTE, Input, Select } from '../';
-import appwriteService from '../../appwrite/config'; // your Service instance
+import appwriteService from '../../appwrite/config';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+	Type,
+	Link as LinkIcon,
+	FileText,
+	Settings,
+	Tag,
+	Upload,
+	Image as ImageIcon,
+	AlertCircle,
+	CheckCircle,
+	X,
+	Save,
+	Eye,
+	Sparkles,
+} from 'lucide-react';
 
 export default function Postform({ post }) {
 	const navigate = useNavigate();
@@ -30,17 +46,18 @@ export default function Postform({ post }) {
 			content: post?.content || '',
 			status: post?.status || 'active',
 			image: undefined,
-			category: post?.category || [], // <-- new
+			category: post?.category || [],
 		},
 		mode: 'onBlur',
 	});
-	console.log(getValues);
+
 	const [errorMsg, setErrorMsg] = useState('');
 	const [localPreview, setLocalPreview] = useState(null);
 	const [categories, setCategories] = useState([]);
+	const [isDragging, setIsDragging] = useState(false);
 	const dropRef = useRef(null);
 
-	// load categories
+	// Load categories
 	useEffect(() => {
 		let mounted = true;
 		(async () => {
@@ -60,7 +77,6 @@ export default function Postform({ post }) {
 	const submit = async (data) => {
 		setErrorMsg('');
 		try {
-			// require at least one category
 			if (!Array.isArray(data.category) || data.category.length === 0) {
 				throw new Error(
 					'Please choose at least one category for this post.'
@@ -68,13 +84,11 @@ export default function Postform({ post }) {
 			}
 
 			if (post) {
-				// update flow
 				const file = data?.image?.[0]
 					? await appwriteService.uploadFile(data.image[0])
 					: null;
 				if (file) {
 					if (post.featuredImage) {
-						// delete old file if present
 						try {
 							await appwriteService.deleteFile(
 								post.featuredImage
@@ -95,12 +109,10 @@ export default function Postform({ post }) {
 				});
 
 				if (dbPost) {
-					// updatePost in your service returns document-like object — use $id or id depending on implementation
 					const id = dbPost.$id || dbPost.id || post.$id;
 					navigate(`/post/${id}`);
 				}
 			} else {
-				// create flow
 				const file = data?.image?.[0]
 					? await appwriteService.uploadFile(data.image[0])
 					: null;
@@ -108,7 +120,6 @@ export default function Postform({ post }) {
 					throw new Error('Please add a featured image.');
 				}
 
-				// assemble payload expected by your service.createPost()
 				const payload = {
 					title: data.title,
 					slug: data.slug,
@@ -154,7 +165,7 @@ export default function Postform({ post }) {
 		return () => subscription.unsubscribe();
 	}, [watch, slugTransform, setValue, getValues]);
 
-	// File preview when selecting a new file
+	// File preview
 	const imageWatch = watch('image');
 	useEffect(() => {
 		if (imageWatch && imageWatch[0]) {
@@ -176,28 +187,40 @@ export default function Postform({ post }) {
 			e.preventDefault();
 			e.stopPropagation();
 		};
+		const onDragEnter = (e) => {
+			prevent(e);
+			setIsDragging(true);
+		};
+		const onDragLeave = (e) => {
+			prevent(e);
+			setIsDragging(false);
+		};
 		const onDrop = (e) => {
 			prevent(e);
+			setIsDragging(false);
 			const file = e.dataTransfer.files?.[0];
 			if (file && /image\/(png|jpe?g|gif)/i.test(file.type)) {
 				setValue('image', [file], { shouldValidate: true });
 			}
 		};
-		['dragenter', 'dragover', 'dragleave', 'drop'].forEach((evt) =>
+		['dragenter', 'dragover'].forEach((evt) =>
 			el.addEventListener(evt, prevent)
 		);
+		el.addEventListener('dragenter', onDragEnter);
+		el.addEventListener('dragleave', onDragLeave);
 		el.addEventListener('drop', onDrop);
 		return () => {
-			['dragenter', 'dragover', 'dragleave', 'drop'].forEach((evt) =>
+			['dragenter', 'dragover'].forEach((evt) =>
 				el.removeEventListener(evt, prevent)
 			);
+			el.removeEventListener('dragenter', onDragEnter);
+			el.removeEventListener('dragleave', onDragLeave);
 			el.removeEventListener('drop', onDrop);
 		};
 	}, [setValue]);
 
 	const active = useMemo(() => getValues('status') === 'active', [getValues]);
 
-	// category selection helper
 	const toggleCategory = (id) => {
 		const current = getValues('category') || [];
 		if (current.includes(id)) {
@@ -215,40 +238,51 @@ export default function Postform({ post }) {
 				onSubmit={handleSubmit(submit)}
 				className="grid grid-cols-1 gap-6 lg:grid-cols-3"
 			>
-				{/* Left column */}
+				{/* Left Column - Main Content */}
 				<div className="lg:col-span-2 space-y-6">
-					{/* Title + slug card */}
-					<div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-6 text-white">
-						<div className="flex items-end gap-3">
+					{/* Title & Slug Card */}
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.5 }}
+						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
+					>
+						<div className="flex items-end gap-3 mb-4">
 							<div className="flex-1">
-								<label className="mb-2 block text-sm text-white/80">
+								<label className="mb-2 flex items-center gap-2 text-sm font-medium text-[#111827]">
+									<Type className="w-4 h-4 text-[#2563EB]" />
 									Title
 								</label>
 								<input
 									placeholder="Amazing new post"
-									className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
+									className="w-full rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-3 text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
 									{...register('title', {
 										required: 'Title is required',
 									})}
 								/>
 								{errors.title && (
-									<p className="mt-2 text-xs text-red-300">
+									<motion.p
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										className="mt-2 text-xs text-red-600"
+									>
 										{errors.title.message}
-									</p>
+									</motion.p>
 								)}
 							</div>
-							<span className="select-none rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/60">
+							<span className="select-none rounded-lg border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2 text-xs font-medium text-[#6B7280]">
 								{titleCount}/100
 							</span>
 						</div>
 
-						<div className="mt-4">
-							<label className="mb-2 block text-sm text-white/80">
+						<div>
+							<label className="mb-2 flex items-center gap-2 text-sm font-medium text-[#111827]">
+								<LinkIcon className="w-4 h-4 text-[#2563EB]" />
 								Slug
 							</label>
 							<input
 								placeholder="auto-generated-from-title"
-								className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
+								className="w-full rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-3 text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
 								{...register('slug', {
 									required: 'Slug is required',
 								})}
@@ -260,23 +294,33 @@ export default function Postform({ post }) {
 									)
 								}
 							/>
-							<p className="mt-2 text-xs text-white/60">
+							<p className="mt-2 text-xs text-[#6B7280]">
 								URL preview:{' '}
-								<span className="text-indigo-300">
+								<span className="font-medium text-[#2563EB]">
 									/post/{watch('slug') || 'your-slug'}
 								</span>
 							</p>
 							{errors.slug && (
-								<p className="mt-2 text-xs text-red-300">
+								<motion.p
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									className="mt-2 text-xs text-red-600"
+								>
 									{errors.slug.message}
-								</p>
+								</motion.p>
 							)}
 						</div>
-					</div>
+					</motion.div>
 
-					{/* Content card */}
-					<div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-6 text-white">
-						<label className="mb-2 block text-sm text-white/80">
+					{/* Content Card */}
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.5, delay: 0.1 }}
+						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
+					>
+						<label className="mb-3 flex items-center gap-2 text-sm font-medium text-[#111827]">
+							<FileText className="w-4 h-4 text-[#2563EB]" />
 							Content
 						</label>
 						<RTE
@@ -286,59 +330,111 @@ export default function Postform({ post }) {
 							defaultValue={getValues('content')}
 						/>
 						{errors.content && (
-							<p className="mt-2 text-xs text-red-300">
+							<motion.p
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								className="mt-2 text-xs text-red-600"
+							>
 								Content is required
-							</p>
+							</motion.p>
 						)}
-					</div>
+					</motion.div>
 				</div>
 
-				{/* Right column */}
+				{/* Right Column - Sidebar */}
 				<aside className="lg:col-span-1 lg:sticky lg:top-20 space-y-6">
-					{/* Post settings */}
-					<div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-6 text-white">
+					{/* Post Settings Card */}
+					<motion.div
+						initial={{ opacity: 0, x: 20 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ duration: 0.5, delay: 0.2 }}
+						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
+					>
 						<div className="mb-4 flex items-center justify-between">
-							<h3 className="text-sm font-medium text-white/90">
-								Post settings
+							<h3 className="flex items-center gap-2 text-sm font-semibold text-[#111827]">
+								<Settings className="w-4 h-4 text-[#2563EB]" />
+								Post Settings
 							</h3>
-							<span
-								className={`rounded-full px-2.5 py-1 text-xs ${
+							<motion.span
+								initial={{ scale: 0 }}
+								animate={{ scale: 1 }}
+								className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
 									active
-										? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/20'
-										: 'bg-yellow-500/20 text-yellow-200 border border-yellow-400/20'
+										? 'bg-green-50 text-green-700 border border-green-200'
+										: 'bg-yellow-50 text-yellow-700 border border-yellow-200'
 								}`}
 							>
-								{active ? 'Active' : 'Inactive'}
-							</span>
+								{active ? (
+									<>
+										<CheckCircle className="w-3 h-3" />
+										Active
+									</>
+								) : (
+									<>
+										<Eye className="w-3 h-3" />
+										Draft
+									</>
+								)}
+							</motion.span>
 						</div>
-						<Select
-							options={['active', 'inactive']}
-							label="Status"
-							className="mb-4"
-							{...register('status', { required: true })}
-						/>
-						<div className="grid grid-cols-2 gap-3">
-							<Button type="submit" className="w-full">
-								{post ? 'Update' : 'Publish'}
-							</Button>
-							<button
-								type="button"
-								className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
-								onClick={() => navigate(-1)}
-							>
-								Cancel
-							</button>
-						</div>
-						{isSubmitting && (
-							<p className="mt-3 text-xs text-white/70">
-								Saving…
-							</p>
-						)}
-					</div>
 
-					{/* Categories selector */}
-					<div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-6 text-white">
-						<label className="mb-2 block text-sm text-white/80">
+						<div className="mb-4">
+							<label className="mb-2 block text-sm font-medium text-[#111827]">
+								Status
+							</label>
+							<select
+								className="w-full rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-2.5 text-[#111827] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+								{...register('status', { required: true })}
+							>
+								<option value="active">Active</option>
+								<option value="inactive">Inactive</option>
+							</select>
+						</div>
+
+						<div className="grid grid-cols-2 gap-3">
+							<motion.button
+								whileHover={{ scale: 1.02 }}
+								whileTap={{ scale: 0.98 }}
+								type="submit"
+								disabled={isSubmitting}
+								className="flex items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1d4ed8] disabled:opacity-60"
+							>
+								<Save className="w-4 h-4" />
+								{post ? 'Update' : 'Publish'}
+							</motion.button>
+							<motion.button
+								whileHover={{ scale: 1.02 }}
+								whileTap={{ scale: 0.98 }}
+								type="button"
+								onClick={() => navigate(-1)}
+								className="flex items-center justify-center gap-2 rounded-lg border border-[#E5E7EB] bg-white px-4 py-2.5 text-sm font-semibold text-[#111827] transition hover:bg-[#F9FAFB]"
+							>
+								<X className="w-4 h-4" />
+								Cancel
+							</motion.button>
+						</div>
+
+						{isSubmitting && (
+							<motion.p
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								className="mt-3 text-xs text-[#6B7280] flex items-center gap-2"
+							>
+								<span className="inline-block w-3 h-3 border-2 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+								Saving…
+							</motion.p>
+						)}
+					</motion.div>
+
+					{/* Categories Card */}
+					<motion.div
+						initial={{ opacity: 0, x: 20 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ duration: 0.5, delay: 0.3 }}
+						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
+					>
+						<label className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#111827]">
+							<Tag className="w-4 h-4 text-[#2563EB]" />
 							Categories
 						</label>
 						<div className="flex flex-wrap gap-2">
@@ -347,42 +443,58 @@ export default function Postform({ post }) {
 									getValues('category') || []
 								).includes(cat.$id);
 								return (
-									<button
+									<motion.button
 										key={cat.$id}
 										type="button"
+										whileHover={{ scale: 1.05 }}
+										whileTap={{ scale: 0.95 }}
 										onClick={() => toggleCategory(cat.$id)}
-										className={`px-3 py-1 rounded-full border text-sm transition whitespace-nowrap ${
+										className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition whitespace-nowrap ${
 											selected
-												? 'bg-indigo-600 text-white border-indigo-600'
-												: 'bg-white/5 border-white/10 text-white/80'
+												? 'bg-[#2563EB] text-white border-[#2563EB] shadow-sm'
+												: 'bg-[#F9FAFB] border-[#E5E7EB] text-[#6B7280] hover:border-[#2563EB] hover:text-[#2563EB]'
 										}`}
 									>
 										{cat.categoryName ||
 											cat.name ||
 											cat.slug}
-									</button>
+									</motion.button>
 								);
 							})}
 						</div>
 						{errors.category && (
-							<p className="mt-2 text-xs text-red-300">
+							<motion.p
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								className="mt-2 text-xs text-red-600"
+							>
 								Please select at least one category
-							</p>
+							</motion.p>
 						)}
-						<p className="mt-2 text-xs text-white/60">
+						<p className="mt-2 text-xs text-[#6B7280]">
 							Select one or more categories for this post.
 						</p>
-					</div>
+					</motion.div>
 
-					{/* Featured image */}
-					<div className="rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-6 text-white">
-						<label className="mb-3 block text-sm text-white/80">
-							Featured image
+					{/* Featured Image Card */}
+					<motion.div
+						initial={{ opacity: 0, x: 20 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ duration: 0.5, delay: 0.4 }}
+						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
+					>
+						<label className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#111827]">
+							<ImageIcon className="w-4 h-4 text-[#2563EB]" />
+							Featured Image
 						</label>
 
 						<div
 							ref={dropRef}
-							className="group relative grid place-items-center rounded-xl border border-dashed border-white/20 bg-white/5 p-5 text-center transition hover:border-indigo-400/60"
+							className={`group relative grid place-items-center rounded-lg border-2 border-dashed p-6 text-center transition ${
+								isDragging
+									? 'border-[#2563EB] bg-blue-50'
+									: 'border-[#E5E7EB] bg-[#F9FAFB] hover:border-[#2563EB] hover:bg-blue-50'
+							}`}
 						>
 							<input
 								type="file"
@@ -391,52 +503,73 @@ export default function Postform({ post }) {
 								{...register('image', { required: !post })}
 							/>
 							<div className="pointer-events-none">
-								<svg
-									className="mx-auto h-8 w-8 text-white/60"
-									viewBox="0 0 24 24"
-									fill="currentColor"
-									aria-hidden="true"
-								>
-									<path d="M19 15v4H5v-4H3v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4h-2Zm-7-1 4-4h-3V3h-2v7H8l4 4Z" />
-								</svg>
-								<p className="mt-2 text-sm text-white/70">
+								<Upload className="mx-auto h-8 w-8 text-[#6B7280] group-hover:text-[#2563EB] transition" />
+								<p className="mt-2 text-sm font-medium text-[#111827]">
 									Drag & drop or click to upload
 								</p>
-								<p className="text-[11px] text-white/50">
+								<p className="text-xs text-[#6B7280]">
 									PNG, JPG, JPEG, GIF
 								</p>
 							</div>
 						</div>
+
 						{errors.image && (
-							<p className="mt-2 text-xs text-red-300">
+							<motion.p
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								className="mt-2 text-xs text-red-600"
+							>
 								Featured image is required
-							</p>
+							</motion.p>
 						)}
 
-						{(localPreview || post) && (
-							<div className="mt-4 overflow-hidden rounded-xl border border-white/10">
-								<img
-									src={
-										localPreview ||
-										(post
-											? appwriteService.getFilePreview(
-													post.featuredImage
-											  )
-											: undefined)
-									}
-									alt={post?.title || 'Preview'}
-									className="h-48 w-full object-cover"
-								/>
-							</div>
-						)}
-					</div>
+						<AnimatePresence>
+							{(localPreview || post) && (
+								<motion.div
+									initial={{ opacity: 0, scale: 0.95 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.95 }}
+									className="mt-4 relative overflow-hidden rounded-lg border border-[#E5E7EB]"
+								>
+									<img
+										src={
+											localPreview ||
+											(post
+												? appwriteService.getFilePreview(
+														post.featuredImage
+												  )
+												: undefined)
+										}
+										alt={post?.title || 'Preview'}
+										className="h-48 w-full object-cover"
+									/>
+									<div className="absolute top-2 right-2">
+										<span className="inline-flex items-center gap-1 rounded-lg bg-white/90 backdrop-blur-sm px-2 py-1 text-xs font-medium text-[#111827] shadow-sm">
+											<Sparkles className="w-3 h-3 text-[#2563EB]" />
+											Preview
+										</span>
+									</div>
+								</motion.div>
+							)}
+						</AnimatePresence>
+					</motion.div>
 
-					{/* Error banner */}
-					{errorMsg && (
-						<div className="rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-red-200">
-							{errorMsg}
-						</div>
-					)}
+					{/* Error Banner */}
+					<AnimatePresence>
+						{errorMsg && (
+							<motion.div
+								initial={{ opacity: 0, height: 0 }}
+								animate={{ opacity: 1, height: 'auto' }}
+								exit={{ opacity: 0, height: 0 }}
+								className="rounded-lg border border-red-200 bg-red-50 p-4 flex items-start gap-3"
+							>
+								<AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+								<p className="text-sm text-red-800">
+									{errorMsg}
+								</p>
+							</motion.div>
+						)}
+					</AnimatePresence>
 				</aside>
 			</form>
 		</section>

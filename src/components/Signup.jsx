@@ -2,11 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { motion } from 'framer-motion';
+import {
+	User,
+	Mail,
+	Lock,
+	Eye,
+	EyeOff,
+	AlertCircle,
+	Sparkles,
+	CheckCircle,
+	Shield,
+} from 'lucide-react';
 import { login as authLogin } from '../store/authSlice';
-import authService from '../appwrite/auth'; // existing wrapper for Account auth
-import service from '../appwrite/config'; // <- your Service default export
-import conf from '../conf/conf.js'; // read DB & collection ids from conf
-import { Logo } from './index'; // keep your existing Logo component
+import authService from '../appwrite/auth';
+import service from '../appwrite/config';
+import conf from '../conf/conf.js';
+import { Logo } from './index';
 
 function Signup() {
 	const navigate = useNavigate();
@@ -23,14 +35,13 @@ function Signup() {
 
 	const [error, setError] = useState('');
 	const [showPassword, setShowPassword] = useState(false);
-
-	// categories & selected interests
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [categories, setCategories] = useState([]);
 	const [selectedInterests, setSelectedInterests] = useState([]);
 
 	const passwordValue = watch('password', '');
 
-	// password strength calc
+	// Password strength calculation
 	const strength = (() => {
 		let score = 0;
 		if (passwordValue.length >= 8) score++;
@@ -38,14 +49,26 @@ function Signup() {
 		if (/[a-z]/.test(passwordValue)) score++;
 		if (/\d/.test(passwordValue)) score++;
 		if (/[@$!%*?&]/.test(passwordValue)) score++;
-		return score; // 0..5
+		return score;
 	})();
 
-	// fetch categories on mount using service.getCategories()
+	const getStrengthColor = () => {
+		if (strength <= 1) return 'bg-red-500';
+		if (strength === 2) return 'bg-orange-500';
+		if (strength === 3) return 'bg-yellow-500';
+		if (strength === 4) return 'bg-lime-500';
+		return 'bg-green-500';
+	};
+
+	const getStrengthWidth = () => {
+		return `${(strength / 5) * 100}%`;
+	};
+
+	// Fetch categories
 	useEffect(() => {
 		async function loadCategories() {
 			try {
-				const res = await service.getCategories(); // returns { documents: [...] }
+				const res = await service.getCategories();
 				setCategories(res?.documents || []);
 			} catch (err) {
 				console.error('Failed to load categories', err);
@@ -56,7 +79,7 @@ function Signup() {
 
 	const toggleInterest = (id) => {
 		setSelectedInterests((prev) =>
-			prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+			prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
 		);
 	};
 
@@ -65,42 +88,35 @@ function Signup() {
 		clearErrors('root');
 
 		try {
-			// 1) create account (authService existing wrapper)
 			await authService.createAccount({
 				name: values.name,
 				email: values.email,
 				password: values.password,
 			});
 
-			// 2) get current user (Auth)
 			const current = await authService.getCurrentUser();
 			if (!current) throw new Error('Failed to fetch created user');
 
-			// 3) create a Profile document linked to Auth userId
 			try {
 				const userId = current.$id;
 				const profileData = {
 					userId,
 					name: values.name || current.name || '',
-					interests: selectedInterests, // array of category $id strings
+					interests: selectedInterests,
 					email: values.email || current.email || '',
 				};
 
-				// Use your service.database.createDocument (Appwrite SDK)
-				// Conf has db & profile collection ids
 				await service.database.createDocument(
 					conf.appwriteDatabaseId,
-					conf.appwriteProfileId, // ensure this key exists in conf.js
-					userId, // document id = auth user id
-					profileData
+					conf.appwriteProfileId,
+					userId,
+					profileData,
 				);
 			} catch (profileErr) {
-				// non-blocking: profile creation error shouldn't break login, but show warning
 				console.warn('Profile creation failed', profileErr);
 			}
 
-			// 4) dispatch login to redux and navigate
-			const freshUser = await authService.getCurrentUser(); // refresh to be safe
+			const freshUser = await authService.getCurrentUser();
 			dispatch(authLogin(freshUser));
 			navigate('/');
 		} catch (err) {
@@ -112,52 +128,60 @@ function Signup() {
 	};
 
 	return (
-		<div className="min-h-screen w-full text-white flex items-center justify-center p-6">
-			<div className="pointer-events-none absolute inset-0 overflow-hidden">
-				<div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-				<div className="absolute -bottom-32 -right-20 h-80 w-80 rounded-full bg-fuchsia-500/10 blur-3xl" />
-			</div>
-
-			<div className="relative w-full max-w-md">
-				<div className="backdrop-blur-xl bg-white/10 border border-white/10 shadow-2xl rounded-2xl p-8">
-					<div className="flex flex-col items-center gap-3">
-						<h1 className="text-2xl font-semibold tracking-tight">
+		<div className="min-h-screen w-full flex items-center justify-center p-6 text-base">
+			<div className="relative w-full max-w-2xl">
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.5 }}
+					className="border border-gray-200 shadow-lg rounded-xl p-8"
+				>
+					{/* Header */}
+					<div className="flex flex-col items-center gap-2 mb-6">
+						<h1 className="text-3xl font-bold tracking-tight text-gray-900">
 							Create your account
 						</h1>
-						<p className="text-sm text-white/70">
+						<p className="text-base text-gray-700">
 							Start your journey in seconds
 						</p>
 					</div>
 
+					{/* Error Alert */}
 					{(error || errors.root?.message) && (
-						<div className="mt-6 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-red-200">
-							{error || errors.root?.message}
-						</div>
+						<motion.div
+							initial={{ opacity: 0, height: 0 }}
+							animate={{ opacity: 1, height: 'auto' }}
+							className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 flex items-start gap-3"
+						>
+							<AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+							<p className="text-base text-red-800">
+								{error || errors.root?.message}
+							</p>
+						</motion.div>
 					)}
 
 					<form
 						onSubmit={handleSubmit(onSubmit)}
-						className="mt-6 space-y-5"
+						className="space-y-6"
 					>
 						{/* Name */}
 						<div>
-							<label
-								htmlFor="name"
-								className="mb-2 block text-sm text-white/80"
-							>
-								Name
+							<label className="mb-2 block text-base font-medium text-gray-900">
+								Full Name
 							</label>
-							<input
-								id="name"
-								type="text"
-								placeholder="Your full name"
-								className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
-								{...register('name', {
-									required: 'Name is required',
-								})}
-							/>
+							<div className="relative">
+								<User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
+								<input
+									type="text"
+									placeholder="Ujjwal Jain"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-4 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									{...register('name', {
+										required: 'Name is required',
+									})}
+								/>
+							</div>
 							{errors.name && (
-								<p className="mt-2 text-xs text-red-300">
+								<p className="mt-2 text-sm text-red-600">
 									{errors.name.message}
 								</p>
 							)}
@@ -165,27 +189,22 @@ function Signup() {
 
 						{/* Email */}
 						<div>
-							<label
-								htmlFor="email"
-								className="mb-2 block text-sm text-white/80"
-							>
-								Email
+							<label className="mb-2 block text-base font-medium text-gray-900">
+								Email Address
 							</label>
-							<input
-								id="email"
-								type="email"
-								placeholder="you@example.com"
-								className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
-								{...register('email', {
-									required: 'Email is required',
-									pattern: {
-										value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/,
-										message: 'Enter a valid email',
-									},
-								})}
-							/>
+							<div className="relative">
+								<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
+								<input
+									type="email"
+									placeholder="ujjwal.dev@gmail.com"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-4 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									{...register('email', {
+										required: 'Email is required',
+									})}
+								/>
+							</div>
 							{errors.email && (
-								<p className="mt-2 text-xs text-red-300">
+								<p className="mt-2 text-sm text-red-600">
 									{errors.email.message}
 								</p>
 							)}
@@ -193,220 +212,122 @@ function Signup() {
 
 						{/* Password */}
 						<div>
-							<label
-								htmlFor="password"
-								className="mb-2 block text-sm text-white/80"
-							>
+							<label className="mb-2 block text-base font-medium text-gray-900">
 								Password
 							</label>
 							<div className="relative">
+								<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
 								<input
-									id="password"
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Create a strong password"
-									className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 pr-12 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-12 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
 									{...register('password', {
 										required: 'Password is required',
-										pattern: {
-											value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-											message:
-												'Use 8+ chars with upper/lower, number & symbol',
-										},
 									})}
 								/>
 								<button
 									type="button"
 									onClick={() => setShowPassword((s) => !s)}
-									className="absolute inset-y-0 right-0 my-1 mr-1 rounded-lg px-3 text-xs text-white/70 hover:text-white/90 bg-white/5 hover:bg-white/10"
-									aria-label={
-										showPassword
-											? 'Hide password'
-											: 'Show password'
-									}
+									className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-gray-900"
 								>
-									{showPassword ? 'Hide' : 'Show'}
+									{showPassword ? <EyeOff /> : <Eye />}
 								</button>
-							</div>
-							{errors.password && (
-								<p className="mt-2 text-xs text-red-300">
-									{errors.password.message}
-								</p>
-							)}
-
-							{/* Strength meter */}
-							<div className="mt-3">
-								<div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-									<div
-										className={`h-full rounded-full transition-all duration-300 ${
-											strength <= 1
-												? 'w-1/5 bg-red-400'
-												: strength === 2
-												? 'w-2/5 bg-orange-400'
-												: strength === 3
-												? 'w-3/5 bg-yellow-400'
-												: strength === 4
-												? 'w-4/5 bg-lime-400'
-												: 'w-full bg-emerald-400'
-										}`}
-									/>
-								</div>
-								<p className="mt-1 text-[11px] text-white/60">
-									{strength <= 2
-										? 'Weak — add numbers, symbols & mix case'
-										: strength === 3
-										? 'Okay — could be stronger'
-										: strength === 4
-										? 'Strong'
-										: 'Very strong'}
-								</p>
 							</div>
 						</div>
 
 						{/* Confirm Password */}
 						<div>
-							<label
-								htmlFor="confirm"
-								className="mb-2 block text-sm text-white/80"
-							>
-								Confirm password
+							<label className="mb-2 block text-base font-medium text-gray-900">
+								Confirm Password
 							</label>
-							<input
-								id="confirm"
-								type={showPassword ? 'text' : 'password'}
-								placeholder="Re-type password"
-								className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
-								{...register('confirm', {
-									required: 'Please confirm your password',
-									validate: (val) =>
-										val === passwordValue ||
-										'Passwords do not match',
-								})}
-							/>
-							{errors.confirm && (
-								<p className="mt-2 text-xs text-red-300">
-									{errors.confirm.message}
-								</p>
-							)}
+							<div className="relative">
+								<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
+								<input
+									type={
+										showConfirmPassword
+											? 'text'
+											: 'password'
+									}
+									placeholder="Re-type your password"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-12 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									{...register('confirm', {
+										required: 'Confirm your password',
+									})}
+								/>
+							</div>
 						</div>
 
-						{/* Interests multi-select */}
+						{/* Interests */}
 						<div>
-							<label className="mb-2 block text-sm text-white/80">
-								Choose your interests
+							<label className="mb-3 flex items-center gap-2 text-base font-medium text-gray-900">
+								<Sparkles className="w-4 h-4 text-blue-600" />
+								Choose Your Interests
 							</label>
+
 							<div className="flex flex-wrap gap-2">
 								{categories.map((cat) => (
 									<button
-										type="button"
 										key={cat.$id}
+										type="button"
 										onClick={() => toggleInterest(cat.$id)}
-										className={`px-3 py-1 rounded-full border transition text-sm ${
+										className={`px-4 py-2 rounded-lg border text-base font-medium transition ${
 											selectedInterests.includes(cat.$id)
-												? 'bg-indigo-600 text-white border-indigo-600'
-												: 'bg-white/5 border-white/10 text-white/80'
+												? 'bg-blue-600 text-white border-blue-600'
+												: 'bg-white border-gray-200 text-gray-700 hover:border-blue-600 hover:text-blue-600'
 										}`}
 									>
-										{cat.categoryName ||
-											cat.name ||
-											cat.title ||
-											cat.slug}
+										{cat.categoryName || cat.name}
 									</button>
 								))}
 							</div>
-							<p className="mt-2 text-xs text-white/60">
-								You can select multiple interests; you can edit
-								these later in your profile.
+
+							<p className="mt-2 text-sm text-gray-700">
+								Select topics you're interested in.
 							</p>
 						</div>
 
 						{/* Terms */}
 						<div className="flex items-start gap-3">
 							<input
-								id="terms"
 								type="checkbox"
-								className="mt-1 h-4 w-4 rounded border-white/20 bg-white/10 text-indigo-500 focus:ring-indigo-400/40"
+								className="mt-1 h-5 w-5 rounded border-gray-200 text-blue-600 focus:ring-blue-600/20"
 								{...register('terms', {
-									required: 'Please accept the terms',
+									required: 'Accept terms',
 								})}
 							/>
-							<label
-								htmlFor="terms"
-								className="text-sm text-white/80"
-							>
+							<label className="text-base text-gray-700">
 								I agree to the{' '}
 								<Link
 									to="/terms"
-									className="text-indigo-300 hover:text-indigo-200"
+									className="text-blue-600 font-medium"
 								>
 									Terms
 								</Link>{' '}
 								and{' '}
 								<Link
 									to="/privacy"
-									className="text-indigo-300 hover:text-indigo-200"
+									className="text-blue-600 font-medium"
 								>
 									Privacy Policy
 								</Link>
-								.
 							</label>
 						</div>
-						{errors.terms && (
-							<p className="-mt-2 text-xs text-red-300">
-								{errors.terms.message}
-							</p>
-						)}
 
-						{/* CTA */}
+						{/* Submit */}
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							className="group relative w-full rounded-xl bg-indigo-500 px-4 py-3 font-medium text-white transition hover:bg-indigo-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
+							className="w-full rounded-lg bg-blue-600 px-4 py-3 text-lg font-semibold text-white hover:bg-blue-700 disabled:opacity-60 "
 						>
-							<span className="absolute inset-0 -z-10 rounded-xl bg-indigo-400/40 blur opacity-0 transition group-hover:opacity-100" />
-							{isSubmitting
-								? 'Creating account…'
-								: 'Create account'}
+							{isSubmitting ? 'Creating...' : 'Create account'}
 						</button>
-
-						{/* Divider */}
-						<div className="relative my-1">
-							<div
-								className="absolute inset-0 flex items-center"
-								aria-hidden="true"
-							>
-								<div className="w-full border-t border-white/10" />
-							</div>
-							{/* <div className="relative flex justify-center">
-								<span className="bg-transparent px-2 text-xs text-white/50">
-									or
-								</span>
-							</div> */}
-						</div>
-
-						{/* OAuth placeholders */}
-						{/* <div className="grid grid-cols-2 gap-3">
-							<button
-								type="button"
-								className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
-							>
-								Sign up with Google
-							</button>
-							<button
-								type="button"
-								className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
-							>
-								Sign up with GitHub
-							</button>
-						</div> */}
 					</form>
-				</div>
+				</motion.div>
 
-				<p className="mt-6 text-center text-sm text-white/70">
+				{/* Footer */}
+				<p className="mt-6 text-center text-base text-gray-700">
 					Already have an account?{' '}
-					<Link
-						to="/login"
-						className="font-medium text-indigo-300 hover:text-indigo-200"
-					>
+					<Link to="/login" className="font-semibold text-blue-600">
 						Sign in
 					</Link>
 				</p>

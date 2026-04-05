@@ -2,156 +2,235 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Logo, LogoutBtn, Button } from '../index';
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import {
+	Home,
+	Compass,
+	Flame,
+	Search,
+	PenSquare,
+	User,
+	LogIn,
+	Rocket,
+	Layers,
+} from 'lucide-react';
 
-/**
- * Responsive header that uses the Button + Logo components.
- * - Desktop: inline nav with animated underline (framer-motion layoutId)
- * - Mobile: collapsible menu
- * Accessibility: proper aria-labels and keyboard-focus friendly classes
- */
 export default function Header() {
 	const authStatus = useSelector((state) => state.auth?.status);
 	const location = useLocation();
 	const [open, setOpen] = useState(false);
 
 	const navItems = [
-		{ name: 'Home', slug: '/', show: true },
-		{ name: 'All Posts', slug: '/all-posts', show: !!authStatus },
-		{ name: 'Add Post', slug: '/add-post', show: !!authStatus },
-		{ name: 'Login', slug: '/login', show: !authStatus },
-		{ name: 'Signup', slug: '/signup', show: !authStatus },
+		{ name: 'Home', slug: '/', icon: Home, show: true },
+
+		// Logged-in only
+		{
+			name: 'Trending',
+			slug: '/all-posts',
+			icon: Flame,
+			show: !!authStatus,
+		},
+		{
+			name: 'Write',
+			slug: '/add-post',
+			icon: PenSquare,
+			show: !!authStatus,
+		},
+		{ name: 'Profile', slug: '/profile', icon: User, show: !!authStatus },
+
+		// Common
+		{ name: 'Explore', slug: '/explore', icon: Compass, show: true },
+
+		// Auth
+		{ name: 'Login', slug: '/login', icon: LogIn, show: !authStatus },
+		{
+			name: 'GetStarted',
+			slug: '/signup',
+			icon: Rocket,
+			show: !authStatus,
+		},
 	];
+
+	const center = navItems.filter(
+		(item) =>
+			['Home', 'Explore', 'Trending'].includes(item.name) && item.show,
+	);
+
+	const right = navItems.filter(
+		(item) =>
+			['Write', 'Profile', 'Login', 'GetStarted'].includes(item.name) &&
+			item.show,
+	);
 
 	const isActive = (slug) => location.pathname === slug;
 
 	return (
-		<header className="sticky top-0 z-50 backdrop-blur-md bg-gradient-to-b from-white/6 to-transparent border-b border-white/6">
-			<div className="max-w-full mx-auto px-4 sm:px-6 lg:px-16">
+		<header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#E5E7EB] shadow-sm">
+			<div className="max-w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex items-center justify-between h-16">
-					<div className="flex items-center gap-6">
-						<Logo />
-					</div>
+					{/* Desktop Navigation */}
+					<div className="hidden md:flex items-center justify-between w-full">
+						{/* LEFT - Logo */}
+						<div className="flex items-center">
+							<Logo />
+						</div>
 
-					{/* Desktop nav */}
-					<nav
-						className="hidden md:flex items-center gap-3"
-						aria-label="Primary navigation"
-					>
-						{navItems.map(
-							(item) =>
-								item.show && (
-									<div key={item.slug} className="relative">
-										<Button
+						{/* CENTER */}
+						<nav className="flex items-center gap-2 ml-40">
+							{center.map((item) => {
+								const Icon = item.icon;
+
+								return (
+									<Link
+										key={item.slug}
+										to={item.slug}
+										className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
+											isActive(item.slug)
+												? 'bg-[#2563EB] text-white'
+												: 'text-gray-700 hover:bg-gray-100'
+										}`}
+									>
+										<Icon size={18} />
+										{item.name}
+									</Link>
+								);
+							})}
+						</nav>
+
+						{/* RIGHT */}
+						<div className="flex items-center gap-2">
+							{right.map((item) => {
+								const Icon = item.icon;
+
+								// CTA button (Get Started / Write)
+								if (
+									item.name === 'GetStarted' ||
+									item.name === 'Write'
+								) {
+									return (
+										<Link
+											key={item.slug}
 											to={item.slug}
-											variant={
-												isActive(item.slug)
-													? 'solid'
-													: 'text'
-											}
-											className={`relative font-medium ${
-												isActive(item.slug)
-													? 'bg-indigo-600/90 text-white'
-													: 'text-white/80 hover:text-white'
-											}`}
+											className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition 
+												bg-[#2563EB] text-white hover:opacity-90`}
 										>
-											<span className="z-10">
-												{item.name}
-											</span>
+											<Icon size={18} />
+											{item.name === 'GetStarted'
+												? 'Get Started'
+												: item.name}
+										</Link>
+									);
+								}
 
-											{/* animated underline using framer-motion */}
-											<motion.span
-												layoutId="nav-underline"
-												initial={false}
-												animate={
-													isActive(item.slug)
-														? {
-																scaleX: 1,
-																opacity: 1,
-														  }
-														: {
-																scaleX: 0,
-																opacity: 0,
-														  }
-												}
-												transition={{ duration: 0.22 }}
-												className="absolute left-2 right-2 bottom-0 h-[2px] origin-left bg-indigo-400"
-												style={{
-													transformOrigin: 'left',
-												}}
-												aria-hidden
-											/>
-										</Button>
-									</div>
-								)
-						)}
+								// Normal items (Profile / Login)
+								return (
+									<Link
+										key={item.slug}
+										to={item.slug}
+										className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition`}
+									>
+										<Icon size={18} />
+										{item.name}
+									</Link>
+								);
+							})}
 
-						{authStatus && (
-							<div className="ml-2">
-								<LogoutBtn />
-							</div>
-						)}
-					</nav>
-
-					{/* Mobile actions */}
-					<div className="md:hidden flex items-center gap-2">
-						<Button
-							variant="unstyled"
-							className="p-2"
-							onClick={() => setOpen((s) => !s)}
-							aria-expanded={open}
-							aria-label="Toggle menu"
-						>
-							{!open ? <Menu size={22} /> : <X size={22} />}
-						</Button>
+							{authStatus && (
+								<div className="">
+									<LogoutBtn />
+								</div>
+							)}
+						</div>
 					</div>
+
+					{/* Mobile Menu Button */}
+					<motion.button
+						whileTap={{ scale: 0.95 }}
+						onClick={() => setOpen((s) => !s)}
+						className="md:hidden p-2 rounded-lg text-[#6B7280] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors"
+						aria-expanded={open}
+						aria-label="Toggle menu"
+					>
+						<AnimatePresence mode="wait">
+							{!open ? (
+								<motion.div
+									key="menu"
+									initial={{ rotate: -90, opacity: 0 }}
+									animate={{ rotate: 0, opacity: 1 }}
+									exit={{ rotate: 90, opacity: 0 }}
+									transition={{ duration: 0.2 }}
+								>
+									<Menu size={24} />
+								</motion.div>
+							) : (
+								<motion.div
+									key="close"
+									initial={{ rotate: 90, opacity: 0 }}
+									animate={{ rotate: 0, opacity: 1 }}
+									exit={{ rotate: -90, opacity: 0 }}
+									transition={{ duration: 0.2 }}
+								>
+									<X size={24} />
+								</motion.div>
+							)}
+						</AnimatePresence>
+					</motion.button>
 				</div>
 			</div>
 
-			{/* Mobile menu - animated */}
-			<motion.div
-				initial={{ height: 0, opacity: 0 }}
-				animate={
-					open
-						? { height: 'auto', opacity: 1 }
-						: { height: 0, opacity: 0 }
-				}
-				transition={{ duration: 0.22 }}
-				className="md:hidden overflow-hidden border-t border-white/6"
-			>
-				<div className="px-4 pt-3 pb-4 space-y-2">
-					{navItems.map(
-						(item) =>
-							item.show && (
-								<div key={item.slug}>
-									<Button
-										to={item.slug}
-										variant={
-											isActive(item.slug)
-												? 'solid'
-												: 'text'
-										}
-										className={`w-full text-left ${
-											isActive(item.slug)
-												? 'bg-indigo-600/90 text-white'
-												: 'text-white/80'
-										}`}
-										onClick={() => setOpen(false)}
-									>
-										{item.name}
-									</Button>
-								</div>
-							)
-					)}
+			{/* Mobile Menu */}
+			<AnimatePresence>
+				{open && (
+					<motion.div
+						initial={{ height: 0, opacity: 0 }}
+						animate={{ height: 'auto', opacity: 1 }}
+						exit={{ height: 0, opacity: 0 }}
+						transition={{ duration: 0.3, ease: 'easeInOut' }}
+						className="md:hidden overflow-hidden border-t border-[#E5E7EB] bg-[#F9FAFB]"
+					>
+						<div className="px-4 py-4 space-y-1">
+							{navItems.map(
+								(item) =>
+									item.show && (
+										<motion.div
+											key={item.slug}
+											initial={{ x: -20, opacity: 0 }}
+											animate={{ x: 0, opacity: 1 }}
+											transition={{ duration: 0.2 }}
+										>
+											<Link
+												to={item.slug}
+												onClick={() => setOpen(false)}
+												className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+													isActive(item.slug)
+														? 'text-white bg-[#2563EB]'
+														: 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
+												}`}
+											>
+												<div className="flex items-center gap-3">
+													<Icon size={18} />
+													{item.name}
+												</div>
+											</Link>
+										</motion.div>
+									),
+							)}
 
-					{authStatus && (
-						<div className="pt-1">
-							<LogoutBtn />
+							{authStatus && (
+								<motion.div
+									initial={{ x: -20, opacity: 0 }}
+									animate={{ x: 0, opacity: 1 }}
+									transition={{ duration: 0.2, delay: 0.1 }}
+									className="pt-2 border-t border-[#E5E7EB]"
+								>
+									<LogoutBtn />
+								</motion.div>
+							)}
 						</div>
-					)}
-				</div>
-			</motion.div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</header>
 	);
 }

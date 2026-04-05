@@ -1,59 +1,63 @@
 import React from 'react';
 import appwriteService from '../appwrite/config';
 import { Link } from 'react-router-dom';
+import parse from 'html-react-parser';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 
-function PostCard({ $id, title, featuredImage, excerpt }) {
+function PostCard({ $id, title, featuredImage, content }) {
 	return (
-		<Link
-			to={`/post/${$id}`}
-			className="group block overflow-hidden rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl transition hover:border-indigo-400/30 hover:bg-white/15 hover:shadow-[0_8px_40px_rgb(49,46,129,0.15)]"
-		>
-			{/* Image */}
-			<div className="relative w-full overflow-hidden rounded-t-2xl">
-				<img
-					src={appwriteService.getFilePreview(
-						featuredImage
-					)}
-					alt={title}
-					className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105"
-					loading="lazy"
-				/>
-				<div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/10 to-transparent opacity-0 transition group-hover:opacity-100" />
-			</div>
-
-			{/* Content */}
-			<div className="flex flex-col justify-between p-5">
-				<h2 className="text-lg font-semibold tracking-tight text-white transition group-hover:text-indigo-300">
-					{title.length > 60 ? title.slice(0, 60) + '…' : title}
-				</h2>
-				{excerpt && (
-					<p className="mt-2 text-sm text-white/70 line-clamp-2">
-						{excerpt.length > 90
-							? excerpt.slice(0, 90) + '…'
-							: excerpt}
-					</p>
-				)}
-
-				<div className="mt-4 flex items-center justify-between text-xs text-white/60">
-					<span className="transition group-hover:text-indigo-300">
-						Read more →
-					</span>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						strokeWidth={1.5}
-						stroke="currentColor"
-						className="h-4 w-4 opacity-70 transition group-hover:translate-x-1 group-hover:opacity-100"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-						/>
-					</svg>
+		<Link to={`/post/${$id}`} className="block h-full">
+			<motion.div
+				whileHover={{ y: -4 }}
+				transition={{ duration: 0.3 }}
+				className="group h-full overflow-hidden border border-[#E5E7EB] bg-white shadow-sm hover:shadow-lg hover:border-[#2563EB] transition-all duration-300"
+			>
+				{/* Image */}
+				<div className="relative w-full overflow-hidden h-[60%]">
+					<motion.img
+						whileHover={{ scale: 1.05 }}
+						transition={{ duration: 0.4 }}
+						src={appwriteService.getFilePreview(featuredImage)}
+						alt={title}
+						className="aspect-[4/3] w-full object-cover"
+						loading="lazy"
+					/>
 				</div>
-			</div>
+
+				{/* Content */}
+				<div className="flex flex-col p-5 justify-between h-[40%] ">
+					<div>
+						<h2 className="text-xl font-bold tracking-tight text-[#111827] group-hover:text-[#2563EB] transition-colors duration-300 line-clamp-2">
+							{title}
+						</h2>
+
+						{content && (
+							<p className="mt-2 text-[#6B7280] line-clamp-2 leading-relaxed">
+								{parse(content)}
+							</p>
+						)}
+					</div>
+
+					{/* Read more footer */}
+					<div className="mt-4 pt-4 border-t border-[#E5E7EB] flex items-center justify-between">
+						<span className="text-sm font-medium text-[#2563EB] group-hover:text-[#1d4ed8] transition-colors">
+							Read more
+						</span>
+						<motion.div
+							animate={{ x: [0, 6, 0] }}
+							transition={{
+								repeat: Infinity,
+								duration: 1.5,
+								ease: 'easeInOut',
+							}}
+							className="opacity-0 group-hover:opacity-100 transition-opacity"
+						>
+							<ArrowRight className="w-5 h-5 text-[#2563EB]" />
+						</motion.div>
+					</div>
+				</div>
+			</motion.div>
 		</Link>
 	);
 }

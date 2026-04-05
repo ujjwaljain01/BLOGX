@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff, Mail, Lock, AlertCircle, Sparkles } from 'lucide-react';
 import { login as authLogin } from '../store/authSlice';
 import authService from '../appwrite/auth';
-import { Logo } from './index'; // keeping your Logo; swap/remove if needed
 
 function Login() {
 	const navigate = useNavigate();
@@ -61,84 +62,89 @@ function Login() {
 	};
 
 	return (
-		<div className="min-h-screen w-full text-white flex items-center justify-center p-6">
-			{/* Decorative gradient orbs */}
-			<div className="pointer-events-none absolute inset-0 overflow-hidden">
-				<div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-				<div className="absolute -bottom-32 -right-20 h-80 w-80 rounded-full bg-fuchsia-500/10 blur-3xl" />
-			</div>
-
+		<div className="min-h-screen w-full flex items-center justify-center p-6">
 			<div className="relative w-full max-w-md">
-				{/* ⭐ ADDED: DEMO CREDENTIALS BOX ⭐ */}
-				<div className="mb-6 backdrop-blur-xl bg-white/10 border border-white/10 rounded-2xl p-5">
-					<h2 className="text-lg font-semibold text-indigo-200">
-						Demo Login (For Showcase)
-					</h2>
-					<p className="mt-1 text-sm text-white/70">
-						This is a skill-showcase project. You can copy & paste
-						these credentials to explore the dashboard without
-						creating an account.
+				{/* Demo Box */}
+				<motion.div
+					initial={{ opacity: 0, y: -20 }}
+					animate={{ opacity: 1, y: 0 }}
+					className="mb-6 border border-gray-200 rounded-xl p-5 shadow-sm"
+				>
+					<div className="flex items-center gap-2 mb-2">
+						<Sparkles className="w-6 h-6 text-blue-600" />
+						<h2 className="text-xl font-semibold text-gray-900">
+							Demo Login
+						</h2>
+					</div>
+
+					<p className="text-base text-gray-700 leading-relaxed">
+						This is a skill-showcase project. Use the button below
+						to explore the dashboard without creating an account.
 					</p>
 
-					{/* Demo Login Button */}
-					<button
+					<motion.button
+						whileHover={{ scale: 1.02 }}
+						whileTap={{ scale: 0.98 }}
 						type="button"
 						onClick={handleDemoLogin}
-						className="mt-6 w-full rounded-xl border border-indigo-400/30 bg-indigo-400/10 px-4 py-3 text-sm font-medium text-indigo-200 transition hover:bg-indigo-400/20"
+						className="mt-4 w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-medium text-white hover:bg-blue-700"
 					>
 						Continue as Demo User
-					</button>
-					<p className="mt-2 text-center text-xs text-white/60">
+					</motion.button>
+
+					<p className="mt-2 text-center text-sm text-gray-700">
 						No signup required. Explore all features instantly.
 					</p>
-				</div>
-				{/* ⭐ END DEMO CREDENTIALS BOX ⭐ */}
+				</motion.div>
 
-				{/* Card */}
-				<div className="backdrop-blur-xl bg-white/10 border border-white/10 shadow-2xl rounded-2xl p-8">
-					<div className="flex flex-col items-center gap-3">
-						<h1 className="text-2xl font-semibold tracking-tight">
+				{/* Login Card */}
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					className=" border border-gray-200 shadow-lg rounded-xl p-8"
+				>
+					<div className="flex flex-col items-center gap-2 mb-6">
+						<h1 className="text-3xl font-bold tracking-tight text-gray-900">
 							Welcome back
 						</h1>
-						<p className="text-sm text-white/70">
+						<p className="text-base text-gray-700">
 							Sign in to your account to continue
 						</p>
 					</div>
 
-					{/* Alert */}
+					{/* Error */}
 					{(error || errors.root?.message) && (
-						<div className="mt-6 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-red-200">
-							{error || errors.root?.message}
-						</div>
+						<motion.div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 flex items-start gap-3">
+							<AlertCircle className="w-6 h-6 text-red-600 mt-0.5" />
+							<p className="text-base text-red-800">
+								{error || errors.root?.message}
+							</p>
+						</motion.div>
 					)}
 
 					<form
 						onSubmit={handleSubmit(onSubmit)}
-						className="mt-6 space-y-5"
+						className="space-y-6"
 					>
 						{/* Email */}
 						<div>
-							<label
-								htmlFor="email"
-								className="mb-2 block text-sm text-white/80"
-							>
+							<label className="mb-2 block text-base font-medium text-gray-900">
 								Email
 							</label>
-							<input
-								id="email"
-								type="email"
-								placeholder="you@example.com"
-								className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
-								{...register('email', {
-									required: 'Email is required',
-									pattern: {
-										value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/,
-										message: 'Enter a valid email',
-									},
-								})}
-							/>
+
+							<div className="relative">
+								<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-700" />
+
+								<input
+									type="email"
+									placeholder="you@example.com"
+									className="w-full rounded-lg bg-white border border-gray-200 pl-12 pr-4 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									{...register('email')}
+								/>
+							</div>
+
 							{errors.email && (
-								<p className="mt-2 text-xs text-red-300">
+								<p className="mt-2 text-sm text-red-600">
 									{errors.email.message}
 								</p>
 							)}
@@ -147,84 +153,74 @@ function Login() {
 						{/* Password */}
 						<div>
 							<div className="flex items-center justify-between mb-2">
-								<label
-									htmlFor="password"
-									className="block text-sm text-white/80"
-								>
+								<label className="text-base font-medium text-gray-900">
 									Password
 								</label>
-								<Link
-									to="/forgot-password"
-									className="text-xs text-indigo-300 hover:text-indigo-200"
-								>
+
+								<Link className="text-sm text-blue-600 font-medium hover:underline">
 									Forgot password?
 								</Link>
 							</div>
+
 							<div className="relative">
+								<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-700" />
+
 								<input
-									id="password"
 									type={showPassword ? 'text' : 'password'}
-									placeholder="Your secure password"
-									className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 pr-12 text-white placeholder-white/40 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/40"
-									{...register('password', {
-										required: 'Password is required',
-										pattern: {
-											value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-											message:
-												'Use 8+ chars with upper/lower, number & symbol',
-										},
-									})}
+									placeholder="Enter your password"
+									className="w-full rounded-lg bg-white border border-gray-200 pl-12 pr-12 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									{...register('password')}
 								/>
+
 								<button
 									type="button"
 									onClick={() => setShowPassword((s) => !s)}
-									className="absolute inset-y-0 right-0 my-1 mr-1 rounded-lg px-3 text-xs text-white/70 hover:text-white/90 bg-white/5 hover:bg-white/10"
+									className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-gray-900"
 								>
-									{showPassword ? 'Hide' : 'Show'}
+									{showPassword ? (
+										<EyeOff className="w-6 h-6" />
+									) : (
+										<Eye className="w-6 h-6" />
+									)}
 								</button>
 							</div>
+
 							{errors.password && (
-								<p className="mt-2 text-xs text-red-300">
+								<p className="mt-2 text-sm text-red-600">
 									{errors.password.message}
 								</p>
 							)}
 						</div>
 
-						{/* Remember me */}
-						<div className="flex items-center gap-2">
+						{/* Remember */}
+						<div className="flex items-center gap-3">
 							<input
-								id="remember"
 								type="checkbox"
-								className="h-4 w-4 rounded border-white/20 bg-white/10 text-indigo-500 focus:ring-indigo-400/40"
+								className="h-5 w-5 rounded border-gray-200 text-blue-600 focus:ring-blue-600/20"
 								{...register('remember')}
 							/>
-							<label
-								htmlFor="remember"
-								className="text-sm text-white/80"
-							>
+							<label className="text-base text-gray-700">
 								Remember me
 							</label>
 						</div>
 
-						{/* Submit button */}
-						<button
+						{/* Button */}
+						<motion.button
+							whileHover={{ scale: 1.02 }}
+							whileTap={{ scale: 0.98 }}
 							type="submit"
 							disabled={isSubmitting}
-							className="group relative w-full rounded-xl bg-indigo-500 px-4 py-3 font-medium text-white transition hover:bg-indigo-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70"
+							className="w-full rounded-lg bg-blue-600 px-4 py-3 text-lg font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
 						>
-							<span className="absolute inset-0 -z-10 rounded-xl bg-indigo-400/40 blur opacity-0 transition group-hover:opacity-100" />
-							{isSubmitting ? 'Signing in…' : 'Sign in'}
-						</button>
+							{isSubmitting ? 'Signing in...' : 'Sign in'}
+						</motion.button>
 					</form>
-				</div>
+				</motion.div>
 
 				{/* Footer */}
-				<p className="mt-6 text-center text-sm text-white/70">
+				<p className="mt-6 text-center text-base text-gray-700">
 					Don’t have an account?{' '}
-					<Link
-						to="/signup"
-						className="font-medium text-indigo-300 hover:text-indigo-200"
-					>
+					<Link className="font-semibold text-blue-600 hover:underline">
 						Sign up
 					</Link>
 				</p>

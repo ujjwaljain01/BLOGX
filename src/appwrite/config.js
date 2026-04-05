@@ -35,7 +35,7 @@ export class Service {
 					status,
 					userId,
 					category,
-				}
+				},
 			);
 		} catch (error) {
 			console.log('Appwrite service :: createpsot :: error', error);
@@ -53,7 +53,7 @@ export class Service {
 					content,
 					featuredImage,
 					status,
-				}
+				},
 			);
 		} catch (error) {
 			console.log('Appwrite service :: updatepost :: error', error);
@@ -65,7 +65,7 @@ export class Service {
 			await this.database.deleteDocument(
 				conf.appwriteDatabaseId,
 				conf.appwriteArticleId,
-				slug
+				slug,
 			);
 			return true;
 		} catch (error) {
@@ -79,7 +79,7 @@ export class Service {
 			return await this.database.getDocument(
 				conf.appwriteDatabaseId,
 				conf.appwriteArticleId,
-				slug
+				slug,
 			);
 		} catch (error) {
 			console.log('Appwrite service :: getpost :: error', error);
@@ -94,7 +94,7 @@ export class Service {
 				conf.appwriteArticleId,
 				queries,
 				100,
-				0
+				0,
 			);
 		} catch (error) {
 			console.log('Appwrite service :: getpost :: error', error);
@@ -109,7 +109,7 @@ export class Service {
 			return await this.bucket.createFile(
 				conf.appwriteBucketId,
 				ID.unique(),
-				file
+				file,
 			);
 		} catch (error) {
 			console.log('Appwrite service :: getpost :: error', error);
@@ -144,10 +144,26 @@ export class Service {
 				conf.appwriteCategoryId, // <- set this in conf.js
 				queries,
 				limit,
-				offset
+				offset,
 			);
 		} catch (error) {
 			console.log('Appwrite service :: getCategories :: error', error);
+			return false;
+		}
+	}
+
+	async getPostsByCategory(category) {
+		try {
+			return await this.database.listDocuments(
+				conf.appwriteDatabaseId,
+				conf.appwriteArticleId,
+				[Query.contains('category', category)],
+			);
+		} catch (error) {
+			console.log(
+				'Appwrite service :: getPostsByCategory :: error',
+				error,
+			);
 			return false;
 		}
 	}
@@ -178,7 +194,7 @@ export class Service {
 				conf.appwriteCommentsId, // add this to conf.js
 				docId,
 				data,
-				permissions
+				permissions,
 			);
 		} catch (err) {
 			console.error('createComment error', err);
@@ -209,7 +225,7 @@ export class Service {
 				conf.appwriteCommentsId,
 				q,
 				limit,
-				offset
+				offset,
 			);
 		} catch (err) {
 			console.error('getCommentsByPost error', err);
@@ -227,7 +243,7 @@ export class Service {
 				conf.appwriteDatabaseId,
 				conf.appwriteCommentsId,
 				commentId,
-				patch
+				patch,
 			);
 		} catch (err) {
 			console.error('updateComment error', err);
@@ -243,7 +259,7 @@ export class Service {
 			return await this.database.deleteDocument(
 				conf.appwriteDatabaseId,
 				conf.appwriteCommentsId,
-				commentId
+				commentId,
 			);
 		} catch (err) {
 			console.error('deleteComment error', err);
