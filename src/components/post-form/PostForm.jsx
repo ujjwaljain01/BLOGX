@@ -79,7 +79,7 @@ export default function Postform({ post }) {
 		try {
 			if (!Array.isArray(data.category) || data.category.length === 0) {
 				throw new Error(
-					'Please choose at least one category for this post.'
+					'Please choose at least one category for this post.',
 				);
 			}
 
@@ -91,7 +91,7 @@ export default function Postform({ post }) {
 					if (post.featuredImage) {
 						try {
 							await appwriteService.deleteFile(
-								post.featuredImage
+								post.featuredImage,
 							);
 						} catch (e) {
 							console.warn('Failed to delete previous file', e);
@@ -204,14 +204,14 @@ export default function Postform({ post }) {
 			}
 		};
 		['dragenter', 'dragover'].forEach((evt) =>
-			el.addEventListener(evt, prevent)
+			el.addEventListener(evt, prevent),
 		);
 		el.addEventListener('dragenter', onDragEnter);
 		el.addEventListener('dragleave', onDragLeave);
 		el.addEventListener('drop', onDrop);
 		return () => {
 			['dragenter', 'dragover'].forEach((evt) =>
-				el.removeEventListener(evt, prevent)
+				el.removeEventListener(evt, prevent),
 			);
 			el.removeEventListener('dragenter', onDragEnter);
 			el.removeEventListener('dragleave', onDragLeave);
@@ -249,13 +249,13 @@ export default function Postform({ post }) {
 					>
 						<div className="flex items-end gap-3 mb-4">
 							<div className="flex-1">
-								<label className="mb-2 flex items-center gap-2 text-sm font-medium text-[#111827]">
+								<label className="mb-2 flex items-center gap-2 text-xs font-medium text-[#111827]">
 									<Type className="w-4 h-4 text-[#2563EB]" />
 									Title
 								</label>
 								<input
 									placeholder="Amazing new post"
-									className="w-full rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-3 text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+									className="w-full rounded-lg bg-[#F9FAFB] border text-sm border-[#E5E7EB] px-4 py-3 text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
 									{...register('title', {
 										required: 'Title is required',
 									})}
@@ -276,13 +276,13 @@ export default function Postform({ post }) {
 						</div>
 
 						<div>
-							<label className="mb-2 flex items-center gap-2 text-sm font-medium text-[#111827]">
+							<label className="mb-2 flex items-center gap-2 text-xs font-medium text-[#111827]">
 								<LinkIcon className="w-4 h-4 text-[#2563EB]" />
 								Slug
 							</label>
 							<input
 								placeholder="auto-generated-from-title"
-								className="w-full rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-3 text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+								className="w-full rounded-lg text-sm bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-3 text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
 								{...register('slug', {
 									required: 'Slug is required',
 								})}
@@ -290,7 +290,7 @@ export default function Postform({ post }) {
 									setValue(
 										'slug',
 										slugTransform(e.currentTarget.value),
-										{ shouldValidate: true }
+										{ shouldValidate: true },
 									)
 								}
 							/>
@@ -319,7 +319,7 @@ export default function Postform({ post }) {
 						transition={{ duration: 0.5, delay: 0.1 }}
 						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
 					>
-						<label className="mb-3 flex items-center gap-2 text-sm font-medium text-[#111827]">
+						<label className="mb-3 flex items-center gap-2 text-xs font-medium text-[#111827]">
 							<FileText className="w-4 h-4 text-[#2563EB]" />
 							Content
 						</label>
@@ -351,7 +351,7 @@ export default function Postform({ post }) {
 						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
 					>
 						<div className="mb-4 flex items-center justify-between">
-							<h3 className="flex items-center gap-2 text-sm font-semibold text-[#111827]">
+							<h3 className="flex items-center gap-2 text-xs font-semibold text-[#111827]">
 								<Settings className="w-4 h-4 text-[#2563EB]" />
 								Post Settings
 							</h3>
@@ -379,11 +379,11 @@ export default function Postform({ post }) {
 						</div>
 
 						<div className="mb-4">
-							<label className="mb-2 block text-sm font-medium text-[#111827]">
+							<label className="mb-2 block text-xs font-medium text-[#111827]">
 								Status
 							</label>
 							<select
-								className="w-full rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-2.5 text-[#111827] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+								className="w-full text-sm rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] px-4 py-2.5 text-[#111827] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
 								{...register('status', { required: true })}
 							>
 								<option value="active">Active</option>
@@ -397,7 +397,7 @@ export default function Postform({ post }) {
 								whileTap={{ scale: 0.98 }}
 								type="submit"
 								disabled={isSubmitting}
-								className="flex items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1d4ed8] disabled:opacity-60"
+								className="flex items-center justify-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#1d4ed8] disabled:opacity-60"
 							>
 								<Save className="w-4 h-4" />
 								{post ? 'Update' : 'Publish'}
@@ -407,7 +407,7 @@ export default function Postform({ post }) {
 								whileTap={{ scale: 0.98 }}
 								type="button"
 								onClick={() => navigate(-1)}
-								className="flex items-center justify-center gap-2 rounded-lg border border-[#E5E7EB] bg-white px-4 py-2.5 text-sm font-semibold text-[#111827] transition hover:bg-[#F9FAFB]"
+								className="flex items-center justify-center gap-2 rounded-lg border border-[#E5E7EB] bg-white px-4 py-2.5 text-xs font-semibold text-[#111827] transition hover:bg-[#F9FAFB]"
 							>
 								<X className="w-4 h-4" />
 								Cancel
@@ -433,7 +433,7 @@ export default function Postform({ post }) {
 						transition={{ duration: 0.5, delay: 0.3 }}
 						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
 					>
-						<label className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#111827]">
+						<label className="mb-3 flex items-center gap-2 text-xs font-semibold text-[#111827]">
 							<Tag className="w-4 h-4 text-[#2563EB]" />
 							Categories
 						</label>
@@ -449,7 +449,7 @@ export default function Postform({ post }) {
 										whileHover={{ scale: 1.05 }}
 										whileTap={{ scale: 0.95 }}
 										onClick={() => toggleCategory(cat.$id)}
-										className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition whitespace-nowrap ${
+										className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition whitespace-nowrap ${
 											selected
 												? 'bg-[#2563EB] text-white border-[#2563EB] shadow-sm'
 												: 'bg-[#F9FAFB] border-[#E5E7EB] text-[#6B7280] hover:border-[#2563EB] hover:text-[#2563EB]'
@@ -483,7 +483,7 @@ export default function Postform({ post }) {
 						transition={{ duration: 0.5, delay: 0.4 }}
 						className="rounded-xl border border-[#E5E7EB] bg-white shadow-sm p-6"
 					>
-						<label className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#111827]">
+						<label className="mb-3 flex items-center gap-2 text-xs font-semibold text-[#111827]">
 							<ImageIcon className="w-4 h-4 text-[#2563EB]" />
 							Featured Image
 						</label>
@@ -504,7 +504,7 @@ export default function Postform({ post }) {
 							/>
 							<div className="pointer-events-none">
 								<Upload className="mx-auto h-8 w-8 text-[#6B7280] group-hover:text-[#2563EB] transition" />
-								<p className="mt-2 text-sm font-medium text-[#111827]">
+								<p className="mt-2 text-xs font-medium text-[#111827]">
 									Drag & drop or click to upload
 								</p>
 								<p className="text-xs text-[#6B7280]">
@@ -536,8 +536,8 @@ export default function Postform({ post }) {
 											localPreview ||
 											(post
 												? appwriteService.getFilePreview(
-														post.featuredImage
-												  )
+														post.featuredImage,
+													)
 												: undefined)
 										}
 										alt={post?.title || 'Preview'}
@@ -564,7 +564,7 @@ export default function Postform({ post }) {
 								className="rounded-lg border border-red-200 bg-red-50 p-4 flex items-start gap-3"
 							>
 								<AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-								<p className="text-sm text-red-800">
+								<p className="text-xs text-red-800">
 									{errorMsg}
 								</p>
 							</motion.div>

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpen, NotebookPen } from 'lucide-react';
+import { Feather} from 'lucide-react';
 
 export default function Logo({ size = 36, compact = false }) {
 	return (
 		<Link
 			to="/"
-			className="flex items-center gap-3 no-underline group"
+			className="flex items-center gap-2 no-underline group"
 			aria-label="BlogX home"
 		>
 			<motion.div
@@ -15,7 +15,7 @@ export default function Logo({ size = 36, compact = false }) {
 				className="flex items-center justify-center"
 				aria-hidden
 			>
-				<NotebookPen
+				<Feather
 					className="text-[#2563EB] group-hover:text-[#1d4ed8] transition-colors"
 					size={size}
 					strokeWidth={2}
@@ -24,12 +24,18 @@ export default function Logo({ size = 36, compact = false }) {
 
 			{!compact && (
 				<div className="leading-tight">
-					<span className="block font-bold text-lg tracking-wide text-[#111827] group-hover:text-[#2563EB] transition-colors">
-						BlogX
+					<span className="block font-bold text-sm tracking-wide text-[#111827] group-hover:text-[#2563EB] transition-colors">
+						Blog
+						<span className='text-blue-600'>X</span>
 					</span>
-					<span className="block text-xs -mt-0.5 text-[#6B7280]">
-						Stories • Dev • Notes
-					</span>
+					<motion.p
+						initial={{ opacity: 0, x: -10 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={{ delay: 0.7, duration: 0.5 }}
+						className="text-[0.5rem] font-semibold tracking-[0.18em] text-blue-500 uppercase"
+					>
+						Write · Share · Inspire
+					</motion.p>
 				</div>
 			)}
 		</Link>

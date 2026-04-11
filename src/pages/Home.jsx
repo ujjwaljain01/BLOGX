@@ -5,7 +5,14 @@ import { Link } from 'react-router-dom';
 import authService from '../appwrite/auth';
 import conf from '../conf/conf.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sparkles, AlertCircle, PlusCircle, LogIn } from 'lucide-react';
+import {
+	Search,
+	Sparkles,
+	AlertCircle,
+	PlusCircle,
+	LogIn,
+	Clock,
+} from 'lucide-react';
 
 export default function Home() {
 	const [posts, setPosts] = useState([]);
@@ -160,13 +167,17 @@ export default function Home() {
 					className="pt-10 md:pt-14"
 				>
 					<div className="flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
-						<div>
-							<h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#111827]">
-								Latest Posts
-							</h1>
-							<p className="mt-2 text-[#6B7280] max-w-2xl">
+						<div className=" animate-fade-in">
+							<div className="flex items-center gap-2 mb-2">
+								<Clock className="text-blue-600" size={28} />
+								<h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+									Latest Posts
+								</h1>
+							</div>
+
+							<p className="text-gray-600 text-lg max-w-2xl">
 								Fresh stories, guides, and updates from the
-								community.
+								community 🚀
 							</p>
 						</div>
 
@@ -177,11 +188,11 @@ export default function Home() {
 							transition={{ duration: 0.6, delay: 0.2 }}
 							className="w-full md:w-80"
 						>
-							<label htmlFor="search" className="sr-only">
+							<label htmlFor="search" className="sr-only text-xs">
 								Search posts
 							</label>
 							<div className="relative">
-								<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280]" />
+								<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
 								<input
 									id="search"
 									type="text"
@@ -208,7 +219,7 @@ export default function Home() {
 							whileTap={{ scale: 0.95 }}
 							type="button"
 							onClick={() => setActiveCat(null)}
-							className={`px-4 py-2 rounded-lg font-medium transition whitespace-nowrap ${
+							className={`px-4 py-2 rounded-lg text-xs transition whitespace-nowrap ${
 								activeCat === null
 									? 'bg-[#2563EB] text-white shadow-md'
 									: 'bg-[#F9FAFB] text-[#6B7280] border border-[#E5E7EB] hover:border-[#2563EB] hover:text-[#2563EB]'
@@ -222,7 +233,7 @@ export default function Home() {
 							whileTap={{ scale: 0.95 }}
 							type="button"
 							onClick={() => handleCategoryClick('for-you')}
-							className={`px-4 py-2 rounded-lg font-medium transition whitespace-nowrap flex items-center gap-1.5 ${
+							className={`px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap flex items-center gap-1.5 ${
 								activeCat === 'for-you'
 									? 'bg-[#2563EB] text-white shadow-md'
 									: 'bg-[#F9FAFB] text-[#6B7280] border border-[#E5E7EB] hover:border-[#2563EB] hover:text-[#2563EB]'
@@ -232,34 +243,6 @@ export default function Home() {
 							<Sparkles className="w-4 h-4" />
 							For You
 						</motion.button>
-
-						{loadingCategories ? (
-							<div className="flex gap-2">
-								{[1, 2, 3].map((i) => (
-									<div
-										key={i}
-										className="h-9 w-24 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB] animate-pulse"
-									/>
-								))}
-							</div>
-						) : (
-							categories.map((cat) => (
-								<motion.button
-									key={cat.$id}
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-									type="button"
-									onClick={() => handleCategoryClick(cat.$id)}
-									className={`px-4 py-2 rounded-lg font-medium transition whitespace-nowrap ${
-										activeCat === cat.$id
-											? 'bg-[#2563EB] text-white shadow-md'
-											: 'bg-[#F9FAFB] text-[#6B7280] border border-[#E5E7EB] hover:border-[#2563EB] hover:text-[#2563EB]'
-									}`}
-								>
-									{cat.categoryName || cat.name || cat.slug}
-								</motion.button>
-							))
-						)}
 					</div>
 				</motion.section>
 
@@ -305,10 +288,10 @@ export default function Home() {
 							transition={{ duration: 0.5 }}
 							className="mx-auto max-w-2xl rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-10 text-center"
 						>
-							<h2 className="text-2xl font-bold text-[#111827]">
+							<h2 className="text-xl font-bold text-[#111827]">
 								No posts yet
 							</h2>
-							<p className="mt-2 text-[#6B7280]">
+							<p className="mt-2 text-sm text-[#6B7280]">
 								{posts.length === 0
 									? 'Login to read posts, or be the first to publish.'
 									: activeCat === 'for-you'

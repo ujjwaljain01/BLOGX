@@ -14,7 +14,7 @@ function PostCard({ $id, title, featuredImage, content }) {
 				className="group h-full overflow-hidden border border-[#E5E7EB] bg-white shadow-sm hover:shadow-lg hover:border-[#2563EB] transition-all duration-300"
 			>
 				{/* Image */}
-				<div className="relative w-full overflow-hidden h-[60%]">
+				<div className="relative w-full overflow-hidden h-[55%]">
 					<motion.img
 						whileHover={{ scale: 1.05 }}
 						transition={{ duration: 0.4 }}
@@ -26,14 +26,14 @@ function PostCard({ $id, title, featuredImage, content }) {
 				</div>
 
 				{/* Content */}
-				<div className="flex flex-col p-5 justify-between h-[40%] ">
+				<div className="flex flex-col pt-3 p-5 justify-between h-[45%] ">
 					<div>
-						<h2 className="text-xl font-bold tracking-tight text-[#111827] group-hover:text-[#2563EB] transition-colors duration-300 line-clamp-2">
+						<h2 className="text-lg font-bold tracking-tight text-[#111827] group-hover:text-[#2563EB] transition-colors duration-300 line-clamp-2">
 							{title}
 						</h2>
 
 						{content && (
-							<p className="mt-2 text-[#6B7280] line-clamp-2 leading-relaxed">
+							<p className="mt-2 text-[#6B7280] text-sm line-clamp-2 leading-relaxed">
 								{parse(content)}
 							</p>
 						)}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, PostCard } from '../components';
 import appwriteService from '../appwrite/config';
-import { Flame, TrendingUp, PlusCircle, LogIn } from 'lucide-react';
+import { Flame, PlusCircle, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
@@ -38,13 +38,12 @@ export default function TrendingPosts() {
 		<div className="w-full py-10 bg-gray-50 min-h-screen">
 			<Container>
 				{/* Header */}
-				<div className="mb-10 text-center">
-					<div className="flex items-center justify-center gap-2 mb-2">
+				<div className="mb-10 ">
+					<div className="flex items-center gap-2 mb-2">
 						<Flame className="text-red-500" size={28} />
 						<h1 className="text-3xl md:text-4xl font-bold text-gray-900">
 							Trending Posts
 						</h1>
-						<TrendingUp className="text-blue-500" size={28} />
 					</div>
 					<p className="text-gray-600 text-lg">
 						Discover what’s hot and popular right now 🔥
@@ -57,7 +56,7 @@ export default function TrendingPosts() {
 						variants={containerVariants}
 						initial="hidden"
 						animate="visible"
-						className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+						className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
 					>
 						{Array.from({ length: 8 }).map((_, i) => (
 							<motion.div
@@ -110,7 +109,7 @@ export default function TrendingPosts() {
 						variants={containerVariants}
 						initial="hidden"
 						animate="visible"
-						className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+						className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
 					>
 						{posts.map((post) => (
 							<motion.div

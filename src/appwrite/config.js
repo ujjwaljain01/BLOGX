@@ -152,12 +152,12 @@ export class Service {
 		}
 	}
 
-	async getPostsByCategory(category) {
+	async getPostsByCategories(categories) {
 		try {
 			return await this.database.listDocuments(
 				conf.appwriteDatabaseId,
 				conf.appwriteArticleId,
-				[Query.contains('category', category)],
+				[Query.contains('category', categories)],
 			);
 		} catch (error) {
 			console.log(

@@ -22,7 +22,7 @@ export default function Header() {
 	const [open, setOpen] = useState(false);
 
 	const navItems = [
-		{ name: 'Home', slug: '/', icon: Home, show: true },
+		{ name: 'Home', slug: '/home', icon: Home, show: true },
 
 		// Logged-in only
 		{
@@ -68,16 +68,16 @@ export default function Header() {
 	return (
 		<header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#E5E7EB] shadow-sm">
 			<div className="max-w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
-				<div className="flex items-center justify-between h-16">
+				<div className="flex items-center justify-between h-16 relative">
 					{/* Desktop Navigation */}
 					<div className="hidden md:flex items-center justify-between w-full">
 						{/* LEFT - Logo */}
 						<div className="flex items-center">
-							<Logo />
+							<Logo size={26} />
 						</div>
 
 						{/* CENTER */}
-						<nav className="flex items-center gap-2 ml-40">
+						<nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
 							{center.map((item) => {
 								const Icon = item.icon;
 
@@ -85,14 +85,23 @@ export default function Header() {
 									<Link
 										key={item.slug}
 										to={item.slug}
-										className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
+										className={`relative flex items-center gap-1 mx-4 py-2 text-xs font-medium transition-colors duration-200 ${
 											isActive(item.slug)
-												? 'bg-[#2563EB] text-white'
-												: 'text-gray-700 hover:bg-gray-100'
+												? 'text-blue-600'
+												: 'text-gray-700 hover:text-blue-600'
 										}`}
 									>
-										<Icon size={18} />
+										<Icon size={14} />
 										{item.name}
+
+										{/* underline */}
+										<span
+											className={`absolute left-0 bottom-0 h-[2px] w-full bg-blue-600 transform transition-transform duration-300 ${
+												isActive(item.slug)
+													? 'scale-x-100'
+													: 'scale-x-0'
+											} origin-left`}
+										/>
 									</Link>
 								);
 							})}
@@ -112,10 +121,10 @@ export default function Header() {
 										<Link
 											key={item.slug}
 											to={item.slug}
-											className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition 
+											className={`flex items-center gap-2 px-4 py-2 text-xs rounded-lg font-medium transition 
 												bg-[#2563EB] text-white hover:opacity-90`}
 										>
-											<Icon size={18} />
+											<Icon size={14} />
 											{item.name === 'GetStarted'
 												? 'Get Started'
 												: item.name}
@@ -128,9 +137,9 @@ export default function Header() {
 									<Link
 										key={item.slug}
 										to={item.slug}
-										className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition`}
+										className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition`}
 									>
-										<Icon size={18} />
+										<Icon size={14} />
 										{item.name}
 									</Link>
 								);

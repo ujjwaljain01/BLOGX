@@ -14,6 +14,7 @@ import Button from './Button';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
 import Select from './Select';
+import { FloatingBlogCards } from './FloatingCards';
 export {
 	Header,
 	Footer,
@@ -23,6 +24,7 @@ export {
 	Input,
 	RTE,
 	Signup,
+	FloatingBlogCards,
 	CommentForm,
 	CommentList,
 	Login,

@@ -44,9 +44,9 @@ function Footer() {
 						className="lg:col-span-5"
 					>
 						<div className="flex items-center gap-3">
-							<Logo width="64px" />
+							<Logo width="64px" size={24} />
 						</div>
-						<p className="mt-4 text-sm text-[#6B7280] max-w-md leading-relaxed">
+						<p className="mt-4 text-xs text-[#6B7280] max-w-md leading-relaxed">
 							Thoughts, tutorials, and stories from our creators.
 							Join the community and never miss an update.
 						</p>
@@ -60,12 +60,12 @@ function Footer() {
 								Email address
 							</label>
 							<div className="relative flex-1">
-								<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280]" />
+								<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
 								<input
 									id="newsletter"
 									type="email"
 									placeholder="Enter your email"
-									className="w-full rounded-lg bg-white border border-[#E5E7EB] pl-11 pr-4 py-3 text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+									className="w-full rounded-lg bg-white border border-[#E5E7EB] pl-11 pr-4 py-3 text-sm text-[#111827] placeholder-[#6B7280] outline-none transition focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
 									required
 								/>
 							</div>
@@ -73,7 +73,7 @@ function Footer() {
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.98 }}
 								type="submit"
-								className="rounded-lg bg-[#2563EB] px-6 py-3 font-medium text-white transition hover:bg-[#1d4ed8] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:ring-offset-2"
+								className="rounded-lg bg-[#2563EB] text-sm px-6 py-3 font-medium text-white transition hover:bg-[#1d4ed8] focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:ring-offset-2"
 							>
 								Subscribe
 							</motion.button>
@@ -128,7 +128,7 @@ function Footer() {
 									<li key={item.label}>
 										<Link
 											to={item.to}
-											className="text-sm text-[#6B7280] hover:text-[#2563EB] transition-colors inline-block"
+											className="text-xs text-[#6B7280] hover:text-[#2563EB] transition-colors inline-block"
 										>
 											{item.label}
 										</Link>
@@ -151,7 +151,7 @@ function Footer() {
 									<li key={item.label}>
 										<Link
 											to={item.to}
-											className="text-sm text-[#6B7280] hover:text-[#2563EB] transition-colors inline-block"
+											className="text-xs text-[#6B7280] hover:text-[#2563EB] transition-colors inline-block"
 										>
 											{item.label}
 										</Link>
@@ -173,7 +173,7 @@ function Footer() {
 									<li key={item.label}>
 										<Link
 											to={item.to}
-											className="text-sm text-[#6B7280] hover:text-[#2563EB] transition-colors inline-block"
+											className="text-xs text-[#6B7280] hover:text-[#2563EB] transition-colors inline-block"
 										>
 											{item.label}
 										</Link>
@@ -190,20 +190,20 @@ function Footer() {
 					whileInView={{ opacity: 1 }}
 					viewport={{ once: true }}
 					transition={{ delay: 0.3 }}
-					className="mt-12 flex flex-col-reverse items-center justify-between gap-4 border-t border-[#E5E7EB] pt-6 text-sm text-[#6B7280] md:flex-row"
+					className="mt-12 flex flex-col-reverse items-center justify-between gap-4 border-t border-[#E5E7EB] pt-6 text-xs text-[#6B7280] md:flex-row"
 				>
 					<p>
 						© {new Date().getFullYear()} BlogX. All rights reserved.
 					</p>
 					<div className="flex items-center gap-6">
 						<Link
-							to="/privacy"
+							to="/"
 							className="hover:text-[#2563EB] transition-colors"
 						>
 							Privacy
 						</Link>
 						<Link
-							to="/terms"
+							to="/"
 							className="hover:text-[#2563EB] transition-colors"
 						>
 							Terms

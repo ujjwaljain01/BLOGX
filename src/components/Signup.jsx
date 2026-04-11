@@ -128,7 +128,7 @@ function Signup() {
 	};
 
 	return (
-		<div className="min-h-screen w-full flex items-center justify-center p-6 text-base">
+		<div className="min-h-screen w-full flex items-center justify-center p-6 text-xs">
 			<div className="relative w-full max-w-2xl">
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
@@ -141,7 +141,7 @@ function Signup() {
 						<h1 className="text-3xl font-bold tracking-tight text-gray-900">
 							Create your account
 						</h1>
-						<p className="text-base text-gray-700">
+						<p className="text-xs text-gray-700">
 							Start your journey in seconds
 						</p>
 					</div>
@@ -153,8 +153,8 @@ function Signup() {
 							animate={{ opacity: 1, height: 'auto' }}
 							className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 flex items-start gap-3"
 						>
-							<AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-							<p className="text-base text-red-800">
+							<AlertCircle className="w-4 h-4 text-red-600 mt-0.5" />
+							<p className="text-xs text-red-800">
 								{error || errors.root?.message}
 							</p>
 						</motion.div>
@@ -166,22 +166,22 @@ function Signup() {
 					>
 						{/* Name */}
 						<div>
-							<label className="mb-2 block text-base font-medium text-gray-900">
+							<label className="mb-2 block text-xs font-medium text-gray-900">
 								Full Name
 							</label>
 							<div className="relative">
-								<User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
+								<User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-700" />
 								<input
 									type="text"
 									placeholder="Ujjwal Jain"
-									className="w-full rounded-lg border border-gray-200 pl-11 pr-4 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-4 py-3 text-sm text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
 									{...register('name', {
 										required: 'Name is required',
 									})}
 								/>
 							</div>
 							{errors.name && (
-								<p className="mt-2 text-sm text-red-600">
+								<p className="mt-2 text-xs text-red-600">
 									{errors.name.message}
 								</p>
 							)}
@@ -189,22 +189,22 @@ function Signup() {
 
 						{/* Email */}
 						<div>
-							<label className="mb-2 block text-base font-medium text-gray-900">
+							<label className="mb-2 block text-xs font-medium text-gray-900">
 								Email Address
 							</label>
 							<div className="relative">
-								<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
+								<Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-700" />
 								<input
 									type="email"
 									placeholder="ujjwal.dev@gmail.com"
-									className="w-full rounded-lg border border-gray-200 pl-11 pr-4 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-4 py-3 text-sm text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
 									{...register('email', {
 										required: 'Email is required',
 									})}
 								/>
 							</div>
 							{errors.email && (
-								<p className="mt-2 text-sm text-red-600">
+								<p className="mt-2 text-xs text-red-600">
 									{errors.email.message}
 								</p>
 							)}
@@ -212,15 +212,15 @@ function Signup() {
 
 						{/* Password */}
 						<div>
-							<label className="mb-2 block text-base font-medium text-gray-900">
+							<label className="mb-2 block text-xs font-medium text-gray-900">
 								Password
 							</label>
 							<div className="relative">
-								<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
+								<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-700" />
 								<input
 									type={showPassword ? 'text' : 'password'}
 									placeholder="Create a strong password"
-									className="w-full rounded-lg border border-gray-200 pl-11 pr-12 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-12 py-3 text-sm text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
 									{...register('password', {
 										required: 'Password is required',
 									})}
@@ -230,18 +230,22 @@ function Signup() {
 									onClick={() => setShowPassword((s) => !s)}
 									className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-gray-900"
 								>
-									{showPassword ? <EyeOff /> : <Eye />}
+									{showPassword ? (
+										<EyeOff className="h-4 w-4" />
+									) : (
+										<Eye className="h-4 w-4" />
+									)}
 								</button>
 							</div>
 						</div>
 
 						{/* Confirm Password */}
 						<div>
-							<label className="mb-2 block text-base font-medium text-gray-900">
+							<label className="mb-2 block text-xs font-medium text-gray-900">
 								Confirm Password
 							</label>
 							<div className="relative">
-								<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-700" />
+								<Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-700" />
 								<input
 									type={
 										showConfirmPassword
@@ -249,7 +253,7 @@ function Signup() {
 											: 'password'
 									}
 									placeholder="Re-type your password"
-									className="w-full rounded-lg border border-gray-200 pl-11 pr-12 py-3 text-lg text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
+									className="w-full rounded-lg border border-gray-200 pl-11 pr-12 py-3 text-sm text-gray-900 placeholder-gray-700 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
 									{...register('confirm', {
 										required: 'Confirm your password',
 									})}
@@ -259,7 +263,7 @@ function Signup() {
 
 						{/* Interests */}
 						<div>
-							<label className="mb-3 flex items-center gap-2 text-base font-medium text-gray-900">
+							<label className="mb-3 flex items-center gap-2 text-xs font-medium text-gray-900">
 								<Sparkles className="w-4 h-4 text-blue-600" />
 								Choose Your Interests
 							</label>
@@ -270,7 +274,7 @@ function Signup() {
 										key={cat.$id}
 										type="button"
 										onClick={() => toggleInterest(cat.$id)}
-										className={`px-4 py-2 rounded-lg border text-base font-medium transition ${
+										className={`px-4 py-2 rounded-lg border text-xs font-medium transition ${
 											selectedInterests.includes(cat.$id)
 												? 'bg-blue-600 text-white border-blue-600'
 												: 'bg-white border-gray-200 text-gray-700 hover:border-blue-600 hover:text-blue-600'
@@ -281,21 +285,21 @@ function Signup() {
 								))}
 							</div>
 
-							<p className="mt-2 text-sm text-gray-700">
+							<p className="mt-2 text-xs text-gray-700">
 								Select topics you're interested in.
 							</p>
 						</div>
 
 						{/* Terms */}
-						<div className="flex items-start gap-3">
+						<div className="flex items-center  gap-3">
 							<input
 								type="checkbox"
-								className="mt-1 h-5 w-5 rounded border-gray-200 text-blue-600 focus:ring-blue-600/20"
+								className="h-4 w-4 rounded border-gray-200 text-blue-600 focus:ring-blue-600/20"
 								{...register('terms', {
 									required: 'Accept terms',
 								})}
 							/>
-							<label className="text-base text-gray-700">
+							<label className="text-xs text-gray-700">
 								I agree to the{' '}
 								<Link
 									to="/terms"
@@ -317,7 +321,7 @@ function Signup() {
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							className="w-full rounded-lg bg-blue-600 px-4 py-3 text-lg font-semibold text-white hover:bg-blue-700 disabled:opacity-60 "
+							className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60 "
 						>
 							{isSubmitting ? 'Creating...' : 'Create account'}
 						</button>
@@ -325,7 +329,7 @@ function Signup() {
 				</motion.div>
 
 				{/* Footer */}
-				<p className="mt-6 text-center text-base text-gray-700">
+				<p className="mt-6 text-center text-xs text-gray-700">
 					Already have an account?{' '}
 					<Link to="/login" className="font-semibold text-blue-600">
 						Sign in

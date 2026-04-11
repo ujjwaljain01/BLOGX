@@ -93,8 +93,8 @@ export default function Post() {
 					className="pt-6 flex items-center gap-2 text-sm text-[#6B7280]"
 				>
 					<Link
-						to="/"
-						className="hover:text-[#2563EB] transition-colors"
+						to="/home"
+						className="hover:text-blue-600 transition-all duration-200 hover:translate-x-0.5"
 					>
 						Home
 					</Link>
@@ -180,7 +180,7 @@ export default function Post() {
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1 }}
 									transition={{ delay: 0.2 }}
-									className="text-2xl md:text-4xl font-bold tracking-tight text-[#111827] mr-[15%]"
+									className="text-lg md:text-xl font-bold tracking-tight text-[#111827] mr-[15%]"
 								>
 									{post.title}
 								</motion.h1>
@@ -221,7 +221,7 @@ export default function Post() {
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1 }}
 									transition={{ delay: 0.4 }}
-									className="prose prose-slate max-w-none mt-6 text-[#111827] text-2xl text-justify"
+									className="prose prose-slate max-w-none mt-6 text-[#111827] text-justify"
 								>
 									{parse(post.content)}
 								</motion.div>
