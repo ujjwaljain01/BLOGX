@@ -449,21 +449,14 @@ export default function Landing() {
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 1.38 }}
-							className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+							className="flex flex-col sm:flex-row gap-4 justify-center text-center lg:justify-start"
 						>
 							<AnimatedButton
-								onClick={() => navigate('/signup')}
-								className="px-8 h-14 text-base"
+								onClick={() => navigate('/login')}
+								className="px-8 h-14 text-base flex items-center"
 							>
 								Start Writing
 								<ArrowIcon />
-							</AnimatedButton>
-
-							<AnimatedButton
-								variant="outline"
-								className="px-8 h-14 text-base"
-							>
-								Explore Stories
 							</AnimatedButton>
 						</motion.div>
 					</motion.div>
@@ -807,20 +800,13 @@ export default function Landing() {
 						your stories without distraction.
 					</p>
 
-					<div className="flex flex-col sm:flex-row gap-4 justify-center">
+					<div className="flex flex-col sm:flex-row gap-4 justify-center text-center">
 						<AnimatedButton
-							onClick={() => navigate('/signup')}
-							className="px-10 h-16 text-lg"
+							onClick={() => navigate('/login')}
+							className="px-10 h-16 text-lg flex items-center justify-between"
 						>
-							Join Community
+							<div>Join Community</div>
 							<ArrowIcon />
-						</AnimatedButton>
-
-						<AnimatedButton
-							variant="outline"
-							className="px-10 h-16 text-lg"
-						>
-							Read Stories
 						</AnimatedButton>
 					</div>
 				</motion.div>

@@ -153,84 +153,112 @@ export default function Header() {
 						</div>
 					</div>
 
-					{/* Mobile Menu Button */}
-					<motion.button
-						whileTap={{ scale: 0.95 }}
-						onClick={() => setOpen((s) => !s)}
-						className="md:hidden p-2 rounded-lg text-[#6B7280] hover:text-[#111827] hover:bg-[#F9FAFB] transition-colors"
-						aria-expanded={open}
-						aria-label="Toggle menu"
-					>
-						<AnimatePresence mode="wait">
-							{!open ? (
-								<motion.div
-									key="menu"
-									initial={{ rotate: -90, opacity: 0 }}
-									animate={{ rotate: 0, opacity: 1 }}
-									exit={{ rotate: 90, opacity: 0 }}
-									transition={{ duration: 0.2 }}
-								>
-									<Menu size={24} />
-								</motion.div>
-							) : (
-								<motion.div
-									key="close"
-									initial={{ rotate: 90, opacity: 0 }}
-									animate={{ rotate: 0, opacity: 1 }}
-									exit={{ rotate: -90, opacity: 0 }}
-									transition={{ duration: 0.2 }}
-								>
-									<X size={24} />
-								</motion.div>
-							)}
-						</AnimatePresence>
-					</motion.button>
+					{/* Mobile: Logo + Hamburger */}
+					<div className="flex md:hidden items-center justify-between w-full">
+						<Logo size={24} />
+
+						<motion.button
+							whileTap={{ scale: 0.92 }}
+							onClick={() => setOpen((s) => !s)}
+							className="p-2 rounded-lg text-[#6B7280] hover:text-[#111827] hover:bg-[#F3F4F6] transition-colors"
+							aria-expanded={open}
+							aria-label="Toggle menu"
+						>
+							<AnimatePresence mode="wait" initial={false}>
+								{!open ? (
+									<motion.div
+										key="menu"
+										initial={{ rotate: -90, opacity: 0 }}
+										animate={{ rotate: 0, opacity: 1 }}
+										exit={{ rotate: 90, opacity: 0 }}
+										transition={{
+											duration: 0.18,
+											ease: 'easeOut',
+										}}
+									>
+										<Menu size={22} />
+									</motion.div>
+								) : (
+									<motion.div
+										key="close"
+										initial={{ rotate: 90, opacity: 0 }}
+										animate={{ rotate: 0, opacity: 1 }}
+										exit={{ rotate: -90, opacity: 0 }}
+										transition={{
+											duration: 0.18,
+											ease: 'easeOut',
+										}}
+									>
+										<X size={22} />
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</motion.button>
+					</div>
 				</div>
 			</div>
 
 			{/* Mobile Menu */}
-			<AnimatePresence>
+			<AnimatePresence initial={false}>
 				{open && (
 					<motion.div
+						key="mobile-menu"
 						initial={{ height: 0, opacity: 0 }}
 						animate={{ height: 'auto', opacity: 1 }}
 						exit={{ height: 0, opacity: 0 }}
-						transition={{ duration: 0.3, ease: 'easeInOut' }}
+						transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
 						className="md:hidden overflow-hidden border-t border-[#E5E7EB] bg-[#F9FAFB]"
 					>
-						<div className="px-4 py-4 space-y-1">
-							{navItems.map(
-								(item) =>
-									item.show && (
-										<motion.div
-											key={item.slug}
-											initial={{ x: -20, opacity: 0 }}
-											animate={{ x: 0, opacity: 1 }}
-											transition={{ duration: 0.2 }}
-										>
-											<Link
-												to={item.slug}
-												onClick={() => setOpen(false)}
-												className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-													isActive(item.slug)
-														? 'text-white bg-[#2563EB]'
+						<div className="px-4 py-3 space-y-1">
+							{navItems.map((item, index) => {
+								if (!item.show) return null;
+
+								// ✅ Icon is now correctly scoped per item
+								const Icon = item.icon;
+								const isCTA =
+									item.name === 'GetStarted' ||
+									item.name === 'Write';
+
+								return (
+									<motion.div
+										key={item.slug}
+										initial={{ x: -14, opacity: 0 }}
+										animate={{ x: 0, opacity: 1 }}
+										transition={{
+											duration: 0.2,
+											ease: 'easeOut',
+											delay: index * 0.04,
+										}}
+									>
+										<Link
+											to={item.slug}
+											onClick={() => setOpen(false)}
+											className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-150 ${
+												isCTA
+													? 'bg-[#2563EB] text-white hover:opacity-90'
+													: isActive(item.slug)
+														? 'bg-[#2563EB] text-white'
 														: 'text-[#6B7280] hover:text-[#111827] hover:bg-white'
-												}`}
-											>
-												<div className="flex items-center gap-3">
-													<Icon size={18} />
-													{item.name}
-												</div>
-											</Link>
-										</motion.div>
-									),
-							)}
+											}`}
+										>
+											<Icon size={17} />
+											{item.name === 'GetStarted'
+												? 'Get Started'
+												: item.name}
+										</Link>
+									</motion.div>
+								);
+							})}
 
 							{authStatus && (
 								<motion.div
-									initial={{ x: -20, opacity: 0 }}
+									initial={{ x: -14, opacity: 0 }}
 									animate={{ x: 0, opacity: 1 }}
-									transition={{ duration: 0.2, delay: 0.1 }}
+									transition={{
+										duration: 0.2,
+										ease: 'easeOut',
+										delay: 0.2,
+									}}
 									className="pt-2 border-t border-[#E5E7EB]"
 								>
 									<LogoutBtn />

@@ -52,12 +52,9 @@ export default function Home() {
 				setLoading(true);
 				const postsRes = await appwriteService.getPosts();
 				const allPosts = postsRes?.documents || [];
-				console.log(allPosts);
-
 				let currentProfile = null;
 				try {
 					const user = await authService.getCurrentUser();
-					console.log(user);
 					if (user) {
 						try {
 							const prof =
